@@ -14,5 +14,5 @@ $client = $factory->createServer('localhost:9001');
 
 $proxier = new Proximate\Proxier($client);
 $proxier->
-    initialiseServerSocket('localhost', 9001)->
+    checkSocketsAvailable()->
     listenLoop();

@@ -31,11 +31,9 @@ class Proxier
      *
      * @todo Swap the die() exits for specialised exceptions
      *
-     * @param string $ip
-     * @param integer $port
      * @return $this
      */
-    public function initialiseServerSocket($ip, $port)
+    public function checkSocketsAvailable()
     {
         foreach (['sockets', ] as $module)
         {
@@ -46,19 +44,6 @@ class Proxier
                 );
             }
         }
-
-        // @todo Does this need to be translated to the new world?
-        #$this->server = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-
-        // @todo These can definitely be removed
-        #socket_set_option($this->server, SOL_SOCKET, SO_REUSEADDR, 1);
-        #socket_bind($this->server, $ip, $port) or die('Could not bind to address');
-        #socket_listen($this->server);
-
-        // @todo These seem to be done by createServer()?
-        #$this->getSocket()->setOption(SOL_SOCKET, SO_REUSEADDR, 1);
-        #$this->getSocket()->bind("{$ip}:{$port}");
-        #$this->getSocket()->listen();
 
         return $this;
     }

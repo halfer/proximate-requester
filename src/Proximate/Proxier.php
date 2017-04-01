@@ -3,6 +3,7 @@
 /**
  * Class to scan headers and determine whether to modify the required protocol
  *
+ * @todo Add a thin wrapper around socket to increase testability, inject it in
  * @todo Add a PSR compatible logger such as MonoLog
  * @todo Inject a cache save device, maybe also PSR?
  */

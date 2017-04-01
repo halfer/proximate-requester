@@ -10,7 +10,7 @@ $requester = new Proximate\Requester('localhost:9001');
 
 // Here's a plaintext version
 #$url = 'http://ilovephp.jondh.me.uk/';
-// @todo Try an HTTPS version next
+// Here's a HTTPS version
 $url = 'https://blog.jondh.me.uk/';
 
 $ok = $requester->

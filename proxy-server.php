@@ -1,10 +1,10 @@
 <?php
 
-/*
+/**
  * Code to set up a simple HTTP proxy server
  */
 
-require_once 'src/Proxier.php';
+require_once 'src/Proximate/Proxier.php';
 
 $proxier = new Proximate\Proxier();
 $proxier->

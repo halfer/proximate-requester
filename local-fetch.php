@@ -1,10 +1,10 @@
 <?php
 
-/* 
+/**
  * Code to kick off the proxy-recording of a HTTPS site
  */
 
-require_once 'src/Requester.php';
+require_once 'src/Proximate/Requester.php';
 
 $requester = new Proximate\Requester('localhost:9001');
 

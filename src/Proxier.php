@@ -2,6 +2,9 @@
 
 /**
  * Class to scan headers and determine whether to modify the required protocol
+ *
+ * @todo Add a PSR compatible logger such as MonoLog
+ * @todo Inject a cache save device, maybe also PSR?
  */
 
 namespace Proximate;
@@ -15,6 +18,15 @@ class Proxier
     protected $writeBuffer;
     protected $realUrlHeaderName = self::REAL_URL_HEADER_NAME;
 
+    /**
+     * Initialises the server listening
+     *
+     * @todo Swap the die() exits for specialised exceptions
+     *
+     * @param string $ip
+     * @param integer $port
+     * @return $this
+     */
     public function initialiseServerSocket($ip, $port)
     {
         foreach (['sockets', ] as $module)

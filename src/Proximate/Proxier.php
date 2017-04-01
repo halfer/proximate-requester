@@ -3,12 +3,14 @@
 /**
  * Class to scan headers and determine whether to modify the required protocol
  *
- * @todo Add a thin wrapper around socket to increase testability, inject it in
+ * @todo Add a thin wrapper around curl to increase testability
  * @todo Add a PSR compatible logger such as MonoLog
  * @todo Inject a cache save device, maybe also PSR?
  */
 
 namespace Proximate;
+
+use Socket\Raw\Socket;
 
 class Proxier
 {
@@ -18,6 +20,11 @@ class Proxier
     protected $client;
     protected $writeBuffer;
     protected $realUrlHeaderName = self::REAL_URL_HEADER_NAME;
+
+    public function __construct(Socket $serverSocket)
+    {
+        $this->server = $serverSocket;
+    }
 
     /**
      * Initialises the server listening
@@ -40,10 +47,18 @@ class Proxier
             }
         }
 
-        $this->server = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        socket_set_option($this->server, SOL_SOCKET, SO_REUSEADDR, 1);
-        socket_bind($this->server, $ip, $port) or die('Could not bind to address');
-        socket_listen($this->server);
+        // @todo Does this need to be translated to the new world?
+        #$this->server = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+
+        // @todo These can definitely be removed
+        #socket_set_option($this->server, SOL_SOCKET, SO_REUSEADDR, 1);
+        #socket_bind($this->server, $ip, $port) or die('Could not bind to address');
+        #socket_listen($this->server);
+
+        // @todo These seem to be done by createServer()?
+        #$this->getSocket()->setOption(SOL_SOCKET, SO_REUSEADDR, 1);
+        #$this->getSocket()->bind("{$ip}:{$port}");
+        #$this->getSocket()->listen();
 
         return $this;
     }
@@ -55,10 +70,10 @@ class Proxier
      */
     public function listenLoop()
     {
-        while($this->client = socket_accept($this->server))
+        while($this->client = $this->getServerSocket()->accept())
         {
             // The buffer size should be enough to accommodate the request - 4K should be fine
-            $input = socket_read($this->client, 1024 * 4);
+            $input = $this->getClientSocket()->read(1024 * 4);
 
             $match = null;
             if(preg_match("'^CONNECT ([^ ]+):(\d+) '", $input, $match)) // HTTPS
@@ -70,7 +85,7 @@ class Proxier
                 $this->handleHttpConnect($input);
             }
 
-            socket_close($this->client);
+            $this->getClientSocket()->close();
         }
     }
 
@@ -139,7 +154,7 @@ class Proxier
 
     protected function writeDataToClient($data)
     {
-        socket_write($this->client, $data);
+        $this->getClientSocket()->write($data);
     }
 
     /**
@@ -352,8 +367,28 @@ class Proxier
         });
     }
 
-    function assembleOutput($headers, $body)
+    protected function assembleOutput($headers, $body)
     {
         return $headers . "\r\n" . $body;
+    }
+
+    /**
+     * Returns the current server socket instance
+     *
+     * @return Socket
+     */
+    protected function getServerSocket()
+    {
+        return $this->server;
+    }
+
+    /**
+     * Returns the current client socket instance
+     *
+     * @return Socket
+     */
+    protected function getClientSocket()
+    {
+        return $this->client;
     }
 }

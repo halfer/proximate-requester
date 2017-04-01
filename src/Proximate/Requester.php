@@ -2,6 +2,8 @@
 
 /**
  * Class to proxy HTTP/HTTPS endpoints via an HTTP proxy so they can be recorded
+ *
+ * @todo Add a thin wrapper around curl to increase testability
  */
 
 namespace Proximate;

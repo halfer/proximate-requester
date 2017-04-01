@@ -50,8 +50,6 @@ class Proxier
 
     /**
      * Default HTTP listening loop
-     *
-     * @todo Need to test to ensure $this->server is initialised before starting loop
      */
     public function listenLoop()
     {

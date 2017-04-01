@@ -87,7 +87,7 @@ class Requester
         $headers = $this->requestHeaders;
         if ($this->getUrl() !== $this->url)
         {
-            $headers[self::REAL_URL_HEADER_NAME] = $this->url;
+            $headers[] = self::REAL_URL_HEADER_NAME . ': ' . $this->url;
         }
 
         return $headers;

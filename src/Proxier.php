@@ -82,6 +82,13 @@ class Proxier
         $method = $this->getMethodFromProxyRequest($input);
         echo "URL is $url, method is $method\n";
 
+        // Swap to the real URL if it is provided
+        if ($realUrl = $this->checkRealUrlHeader($input))
+        {
+            $url = $realUrl;
+            echo "Real URL detected: $url\n";
+        }
+
         // @todo Add headers to this
         $ok = $this->fetch($url, $method);
 
@@ -261,12 +268,15 @@ class Proxier
         $lineStart = '^';
         $whitespace = '\\s*';
         $header = self::REAL_URL_HEADER_NAME;
-        $nonWhitespace = '[^ ]+';
-        $regex = "#{$lineStart}{$header}:{$whitespace}{$nonWhitespace}#m";
+        $nonWhitespace = '[^ \\r\\n]+';
+        $regex = "#^{$lineStart}{$header}:{$whitespace}({$nonWhitespace})#m";
 
+        // Search the headers for a "real URL" declaration
         $matches = null;
-        preg_match($regex, $input, $matches);
-        print_r($matches);
+        $ok = preg_match($regex, $input, $matches);
+        $url = $ok ? $matches[1] : null;
+
+        return $url;
     }
 
     protected function getHeaders($output)

@@ -1,0 +1,6 @@
+# Ignore composer executable and deps
+composer
+vendor/
+
+# Ignore IDE
+nbproject/

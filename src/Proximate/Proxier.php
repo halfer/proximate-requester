@@ -4,13 +4,15 @@
  * Class to scan headers and determine whether to modify the required protocol
  *
  * @todo Add a thin wrapper around curl to increase testability
- * @todo Add a PSR compatible logger such as MonoLog
  * @todo Inject a cache save device, maybe also PSR?
+ * @todo Add shutdown handler to shutdown the socket
  */
 
 namespace Proximate;
 
 use Socket\Raw\Socket;
+use Psr\Log\LoggerInterface;
+use Monolog\Logger;
 
 class Proxier
 {
@@ -18,6 +20,7 @@ class Proxier
 
     protected $server;
     protected $client;
+    protected $logger;
     protected $writeBuffer;
     protected $realUrlHeaderName = self::REAL_URL_HEADER_NAME;
 
@@ -39,11 +42,24 @@ class Proxier
         {
             if (!extension_loaded($module))
             {
-                die(
-                    sprintf("Error: extension `%s` not loaded\n", $module)
-                );
+                $message = sprintf("Error: extension `%s` not loaded\n", $module);
+                $this->log($message, Logger::CRITICAL);
+                die($message);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Sets up a PSR-compliant logger on this class
+     *
+     * @param LoggerInterface $logger
+     * @return $this
+     */
+    public function addLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
 
         return $this;
     }
@@ -53,6 +69,8 @@ class Proxier
      */
     public function listenLoop()
     {
+        $this->log("Starting proxy listener");
+
         while($this->client = $this->getServerSocket()->accept())
         {
             // The buffer size should be enough to accommodate the request - 4K should be fine
@@ -81,7 +99,7 @@ class Proxier
      */
     protected function handleHttpsConnect($input)
     {
-        echo "HTTPS proxying not supported\n";
+        $this->log("HTTPS proxying not supported", Logger::ERROR);
 
         $this->writeDataToClient("HTTP/1.1 500 Server error\r\n\r\n");
     }
@@ -95,13 +113,13 @@ class Proxier
     {
         $url = $this->getTargetUrlFromProxyRequest($input);
         $method = $this->getMethodFromProxyRequest($input);
-        echo "URL is $url, method is $method\n";
+        $this->log("URL is $url, method is $method");
 
         // Swap to the real URL if it is provided
         if ($realUrl = $this->checkRealUrlHeader($input))
         {
             $url = $realUrl;
-            echo "Real URL detected: $url\n";
+            $this->log("HTTPS URL detected passed in header: $url");
         }
 
         // @todo Add headers to this
@@ -119,9 +137,12 @@ class Proxier
             );
 
             // Show debug output
-            #if (strpos($targetSiteData, 'HTTP/1.1 200 OK') !== false) {
-            #    echo $targetSiteData . "\n";
-            #}
+            if (strpos($targetSiteData, 'HTTP/1.1 200 OK') !== false)
+            {
+                $this->log(
+                    sprintf("Fetched %d bytes from target site", strlen($targetSiteData))
+                );
+            }
 
             // Create a cache key and save the page data
             #savePage(createCacheKey($url, $method), $targetSiteData);
@@ -143,7 +164,8 @@ class Proxier
     /**
      * Fetches the proxied site
      *
-     * @todo Throw a custom exception on error, don't print the error out
+     * I'm logging an error here rather than throwing an exception, since I don't want to
+     * cause the listening loop to break permanently.
      *
      * @param string $url
      * @param string $method
@@ -158,9 +180,12 @@ class Proxier
         $result = curl_exec($curl);
 
         if ($result === false) {
-            echo sprintf(
-                "Fetch error: %s\n",
-                curl_strerror(curl_errno($curl))
+            $this->log(
+                sprintf(
+                    "Fetch error: %s\n",
+                    curl_strerror(curl_errno($curl))
+                ),
+                Logger::ERROR
             );
         }
 
@@ -353,6 +378,21 @@ class Proxier
     protected function assembleOutput($headers, $body)
     {
         return $headers . "\r\n" . $body;
+    }
+
+    /**
+     * Logs a message if a logger has been provided, otherwise ignores log request
+     *
+     * @param string $message
+     * @param integer $level
+     */
+    protected function log($message, $level = Logger::INFO)
+    {
+        if ($logger = $this->logger)
+        {
+            /* @var $logger LoggerInterface */
+            $logger->log($level, $message);
+        }
     }
 
     /**

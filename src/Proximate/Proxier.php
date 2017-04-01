@@ -84,8 +84,7 @@ class Proxier
     {
         echo "HTTPS proxying not supported\n";
 
-        $targetSiteData = "HTTP/1.1 500 Server error\r\n\r\n";
-        socket_write($this->client, $targetSiteData);
+        $this->writeDataToClient("HTTP/1.1 500 Server error\r\n\r\n");
     }
 
     /**
@@ -134,7 +133,12 @@ class Proxier
             $targetSiteData = "HTTP/1.1 500 Server error\r\n\r\n";
         }
 
-        socket_write($this->client, $targetSiteData);
+        $this->writeDataToClient($targetSiteData);
+    }
+
+    protected function writeDataToClient($data)
+    {
+        socket_write($this->client, $data);
     }
 
     /**

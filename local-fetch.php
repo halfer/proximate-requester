@@ -4,9 +4,9 @@
  * Code to kick off the proxy-recording of a HTTPS site
  */
 
-require_once 'src/Proximate/Requester.php';
+require_once 'src/Proximate/Client.php';
 
-$requester = new Proximate\Requester('localhost:9001');
+$requester = new Proximate\Client('localhost:9001');
 
 // Here's a plaintext version
 #$url = 'http://ilovephp.jondh.me.uk/';

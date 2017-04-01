@@ -8,7 +8,7 @@
 
 namespace Proximate;
 
-class Requester
+class Client
 {
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
 

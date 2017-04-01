@@ -5,7 +5,7 @@
  */
 
 require_once 'vendor/autoload.php';
-require_once 'src/Proximate/Proxier.php';
+require_once 'src/Proximate/Proxy.php';
 
 use Socket\Raw\Factory as SocketFactory;
 use Monolog\Logger;
@@ -17,7 +17,7 @@ $client = $factory->createServer('localhost:9001');
 $logger = new Logger('stdout');
 $logger->pushHandler(new ErrorLogHandler());
 
-$proxier = new Proximate\Proxier($client);
+$proxier = new Proximate\Proxy($client);
 $proxier->
     checkSocketsAvailable()->
     addLogger($logger)->

@@ -14,7 +14,7 @@ use Socket\Raw\Socket;
 use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 
-class Proxier
+class Proxy
 {
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
 

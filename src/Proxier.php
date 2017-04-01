@@ -64,11 +64,16 @@ class Proxier
     /**
      * We've received an HTTPS connection
      *
+     * @todo Can the 500 error be more explicit for the client's benefit?
+     *
      * @param string $input
      */
     protected function handleHttpsConnect($input)
     {
-        // @todo Throw an exception
+        echo "HTTPS proxying not supported\n";
+
+        $targetSiteData = "HTTP/1.1 500 Server error\r\n\r\n";
+        socket_write($this->client, $targetSiteData);
     }
 
     /**

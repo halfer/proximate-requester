@@ -2,6 +2,8 @@
     "require": {
         "clue/socket-raw": "^1.2",
         "psr/log": "^1.0",
-        "monolog/monolog": "^1.22"
+        "monolog/monolog": "^1.22",
+        "psr/cache": "^1.0",
+        "cache/filesystem-adapter": "^0.4.0"
     }
 }

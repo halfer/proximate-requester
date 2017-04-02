@@ -4,13 +4,13 @@
  * Class to scan headers and determine whether to modify the required protocol
  *
  * @todo Add a thin wrapper around curl to increase testability
- * @todo Inject a cache save device, maybe also PSR?
  * @todo Add shutdown handler to shutdown the socket
  */
 
 namespace Proximate;
 
 use Socket\Raw\Socket;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 
@@ -20,13 +20,15 @@ class Proxy
 
     protected $server;
     protected $client;
+    protected $cachePool;
     protected $logger;
     protected $writeBuffer;
     protected $realUrlHeaderName = self::REAL_URL_HEADER_NAME;
 
-    public function __construct(Socket $serverSocket)
+    public function __construct(Socket $serverSocket, CacheItemPoolInterface $cachePool)
     {
         $this->server = $serverSocket;
+        $this->cachePool = $cachePool;
     }
 
     /**
@@ -107,6 +109,8 @@ class Proxy
     /**
      * We've received an HTTP connection
      *
+     * @todo Don't fetch and save page if it is already cached
+     *
      * @param string $input
      */
     protected function handleHttpConnect($input)
@@ -145,7 +149,11 @@ class Proxy
             }
 
             // Create a cache key and save the page data
-            #savePage(createCacheKey($url, $method), $targetSiteData);
+            $key = $this->createCacheKey($url, $method);
+            $this->log(
+                sprintf("Saving response against cache key `%s`", $key)
+            );
+            $this->savePage($key, $targetSiteData);
         }
         else
         {
@@ -381,18 +389,29 @@ class Proxy
     }
 
     /**
-     * Logs a message if a logger has been provided, otherwise ignores log request
+     * Creates a cache key for page metadata
      *
-     * @param string $message
-     * @param integer $level
+     * Should we consider query strings or POST parameters?
+     *
+     * @param string $url
+     * @param string $method
      */
-    protected function log($message, $level = Logger::INFO)
+    protected function createCacheKey($url, $method)
     {
-        if ($logger = $this->logger)
-        {
-            /* @var $logger LoggerInterface */
-            $logger->log($level, $message);
-        }
+        return sha1($method . $url);
+    }
+
+    /**
+     * Save the page to the cache system
+     *
+     * @param string $key
+     * @param string $response
+     */
+    protected function savePage($key, $response)
+    {
+        $item = $this->getCachePool()->getItem($key);
+        $item->set($response);
+        $this->getCachePool()->save($item);
     }
 
     /**
@@ -413,5 +432,30 @@ class Proxy
     protected function getClientSocket()
     {
         return $this->client;
+    }
+
+    /**
+     * Gets the cache so items can be added to it
+     *
+     * @return CacheItemPoolInterface
+     */
+    protected function getCachePool()
+    {
+        return $this->cachePool;
+    }
+
+    /**
+     * Logs a message if a logger has been provided, otherwise ignores log request
+     *
+     * @param string $message
+     * @param integer $level
+     */
+    protected function log($message, $level = Logger::INFO)
+    {
+        if ($logger = $this->logger)
+        {
+            /* @var $logger LoggerInterface */
+            $logger->log($level, $message);
+        }
     }
 }

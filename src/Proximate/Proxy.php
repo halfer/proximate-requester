@@ -126,39 +126,34 @@ class Proxy
             $this->log("HTTPS URL detected passed in header: $url");
         }
 
-        // @todo Add headers to this
-        $ok = $this->fetch($url, $method);
+        // Check if cache key exists
+        $key = $this->createCacheKey($url, $method);
+        $cacheItem = $this->getCachePool()->getItem($key);
 
-        if ($ok)
+        if ($cacheItem->isHit())
         {
-            $targetSiteData = $this->assembleOutput(
-                $this->implodeHeaders(
-                    $this->filterHeaders(
-                        $this->getHeaders($this->getOutputBuffer())
-                    )
-                ),
-                $this->getBody($this->getOutputBuffer())
-            );
-
-            // Show debug output
-            if (strpos($targetSiteData, 'HTTP/1.1 200 OK') !== false)
-            {
-                $this->log(
-                    sprintf("Fetched %d bytes from target site", strlen($targetSiteData))
-                );
-            }
-
-            // Create a cache key and save the page data
-            $key = $this->createCacheKey($url, $method);
+            // If it does then read it here
+            $targetSiteData = $cacheItem->get();
             $this->log(
-                sprintf("Saving response against cache key `%s`", $key)
+                sprintf(
+                    "Retrieved page of %d bytes from cache against key %s",
+                    strlen($targetSiteData),
+                    $key
+                )
             );
-            $this->savePage($key, $targetSiteData);
         }
         else
         {
-            // Is there a better way to handle an error condition?
-            $targetSiteData = "HTTP/1.1 500 Server error\r\n\r\n";
+            // @todo Add headers to this (e.g. User Agent)
+            $ok = $this->fetch($url, $method);
+            if ($ok)
+            {
+                $targetSiteData = $this->saveToCache($key);
+            }
+            else
+            {
+                $targetSiteData = $this->getFailureResponse();
+           }
         }
 
         $this->writeDataToClient($targetSiteData);
@@ -201,7 +196,46 @@ class Proxy
 
         // Includes headers
         return $result !== false;
+    }
 
+    protected function saveToCache($key)
+    {
+        $targetSiteData = $this->assembleOutput(
+            $this->implodeHeaders(
+                $this->filterHeaders(
+                    $this->getHeaders($this->getOutputBuffer())
+                )
+            ),
+            $this->getBody($this->getOutputBuffer())
+        );
+
+        // Save item to the cache
+        $item = $this->getCachePool()->getItem($key);
+        $item->set($targetSiteData);
+        $this->getCachePool()->save($item);
+
+        $this->log(
+            sprintf(
+                "Fetched page of %d bytes and saving against cache key `%s`",
+                strlen($targetSiteData),
+                $key
+            )
+        );
+
+        $this->log(
+            sprintf("The cache now contains %d items", count($this->getCachePool()->getItems()))
+        );
+
+        return $targetSiteData;
+    }
+
+    // Is there a better way to handle an error condition?
+    protected function getFailureResponse()
+    {
+        $this->log("Failed to load requested site", Logger::ERROR);
+        $targetSiteData = "HTTP/1.1 500 Server error\r\n\r\n";
+
+        return $targetSiteData;
     }
 
     /**
@@ -399,19 +433,6 @@ class Proxy
     protected function createCacheKey($url, $method)
     {
         return sha1($method . $url);
-    }
-
-    /**
-     * Save the page to the cache system
-     *
-     * @param string $key
-     * @param string $response
-     */
-    protected function savePage($key, $response)
-    {
-        $item = $this->getCachePool()->getItem($key);
-        $item->set($response);
-        $this->getCachePool()->save($item);
     }
 
     /**

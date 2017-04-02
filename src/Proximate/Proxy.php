@@ -11,6 +11,7 @@ namespace Proximate;
 
 use Socket\Raw\Socket;
 use Psr\Cache\CacheItemPoolInterface;
+use Proximate\CacheAdapter\BaseAdapter as CacheAdapter;
 use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 
@@ -21,14 +22,16 @@ class Proxy
     protected $server;
     protected $client;
     protected $cachePool;
+    protected $cacheAdapter;
     protected $logger;
     protected $writeBuffer;
     protected $realUrlHeaderName = self::REAL_URL_HEADER_NAME;
 
-    public function __construct(Socket $serverSocket, CacheItemPoolInterface $cachePool)
+    public function __construct(Socket $serverSocket, CacheItemPoolInterface $cachePool, CacheAdapter $cacheAdapter)
     {
         $this->server = $serverSocket;
         $this->cachePool = $cachePool;
+        $this->cacheAdapter = $cacheAdapter;
     }
 
     /**
@@ -223,7 +226,7 @@ class Proxy
         );
 
         $this->log(
-            sprintf("The cache now contains %d items", count($this->getCachePool()->getItems()))
+            sprintf("The cache now contains %d items", $this->getCacheAdapter()->countCacheItems())
         );
 
         return $targetSiteData;
@@ -463,6 +466,16 @@ class Proxy
     protected function getCachePool()
     {
         return $this->cachePool;
+    }
+
+    /**
+     * Gets the cache adapter for the cache
+     *
+     * @return CacheAdapter
+     */
+    protected function getCacheAdapter()
+    {
+        return $this->cacheAdapter;
     }
 
     /**

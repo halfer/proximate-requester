@@ -4,3 +4,6 @@ vendor/
 
 # Ignore IDE
 nbproject/
+
+# Ignore local cache folder
+cache/

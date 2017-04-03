@@ -4,6 +4,9 @@
  * Code to set up a simple HTTP proxy server
  */
 
+// Enables pcntl signal catching
+declare(ticks = 1);
+
 require_once 'vendor/autoload.php';
 
 use Socket\Raw\Factory as SocketFactory;
@@ -33,8 +36,19 @@ $cacheAdapter = new FilesystemCacheAdapter($filesystem);
 $logger = new Logger('stdout');
 $logger->pushHandler(new ErrorLogHandler());
 
+// Use pcntl to capture kill signals, so we can close down the server conn cleanly
+$exitHandler = function() use ($client, $logger)
+{
+    $client->close();
+    $logger->info('Closing server connection before exiting');
+    exit();
+};
+pcntl_signal(SIGINT, $exitHandler);
+pcntl_signal(SIGTERM, $exitHandler);
+
 $proxier = new Proximate\Proxy($client, $cachePool, $cacheAdapter);
 $proxier->
     checkSocketsAvailable()->
     addLogger($logger)->
+    setDispatchPcntlSigs(true)->
     listenLoop();

@@ -3,7 +3,6 @@
 /**
  * Class to scan headers and determine whether to modify the required protocol
  *
- * @todo Add shutdown handler to shutdown the socket
  * @todo Consider how to use wget --recursive for HTTPS sites given that we cannot get it
  *       to proxy over HTTP
  * @todo Publish to Github and set up Travis HTTP and HTTPS tests
@@ -27,6 +26,7 @@ class Proxy
     protected $cachePool;
     protected $cacheAdapter;
     protected $logger;
+    protected $dispatchPcntlSigs = false;
     protected $writeBuffer;
     protected $realUrlHeaderName = self::REAL_URL_HEADER_NAME;
 
@@ -72,15 +72,34 @@ class Proxy
         return $this;
     }
 
+    public function setDispatchPcntlSigs($dispatchPcntlSigs)
+    {
+        $this->dispatchPcntlSigs = $dispatchPcntlSigs;
+
+        return $this;
+    }
+
     /**
      * Default HTTP listening loop
      */
     public function listenLoop()
     {
         $this->log("Starting proxy listener");
+        $this->getServerSocket()->setBlocking(false);
 
-        while($this->client = $this->getServerSocket()->accept())
+        while(true)
         {
+            if (!$this->getServerSocket()->selectRead())
+            {
+                usleep(10000);
+                if ($this->dispatchPcntlSigs)
+                {
+                    pcntl_signal_dispatch();
+                }
+                continue;
+            }
+            $this->client = $this->getServerSocket()->accept();
+
             // The buffer size should be enough to accommodate the request - 4K should be fine
             $input = $this->getClientSocket()->read(1024 * 4);
 

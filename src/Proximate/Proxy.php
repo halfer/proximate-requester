@@ -3,8 +3,12 @@
 /**
  * Class to scan headers and determine whether to modify the required protocol
  *
- * @todo Add a thin wrapper around curl to increase testability
+ * @todo Add autoloader for my own classes
  * @todo Add shutdown handler to shutdown the socket
+ * @todo Consider how to use wget --recursive for HTTPS sites given that we cannot get it
+ *       to proxy over HTTP
+ * @todo Publish to Github and set up Travis HTTP and HTTPS tests
+ * @todo Add a thin wrapper around curl to increase testability
  */
 
 namespace Proximate;

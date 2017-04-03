@@ -3,7 +3,6 @@
 /**
  * Class to scan headers and determine whether to modify the required protocol
  *
- * @todo Add autoloader for my own classes
  * @todo Add shutdown handler to shutdown the socket
  * @todo Consider how to use wget --recursive for HTTPS sites given that we cannot get it
  *       to proxy over HTTP

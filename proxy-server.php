@@ -5,9 +5,6 @@
  */
 
 require_once 'vendor/autoload.php';
-require_once 'src/Proximate/Proxy.php';
-require_once 'src/Proximate/CacheAdapter/BaseAdapter.php';
-require_once 'src/Proximate/CacheAdapter/Filesystem.php';
 
 use Socket\Raw\Factory as SocketFactory;
 

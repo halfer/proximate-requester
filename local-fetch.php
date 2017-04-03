@@ -4,7 +4,7 @@
  * Code to kick off the proxy-recording of a HTTPS site
  */
 
-require_once 'src/Proximate/Client.php';
+require_once 'vendor/autoload.php';
 
 $requester = new Proximate\Client('localhost:9001');
 

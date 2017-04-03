@@ -5,5 +5,10 @@
         "monolog/monolog": "^1.22",
         "psr/cache": "^1.0",
         "cache/filesystem-adapter": "^0.4.0"
+    },
+    "autoload": {
+      "psr-0" : {
+        "Proximate": "src/"
+      }
     }
 }

@@ -27,6 +27,7 @@ class Proxy
     protected $cacheAdapter;
     protected $logger;
     protected $dispatchPcntlSigs = false;
+    protected $exit = false;
     protected $writeBuffer;
     protected $realUrlHeaderName = self::REAL_URL_HEADER_NAME;
 
@@ -72,11 +73,21 @@ class Proxy
         return $this;
     }
 
-    public function setDispatchPcntlSigs($dispatchPcntlSigs)
+    public function handleTerminationSignals()
     {
-        $this->dispatchPcntlSigs = $dispatchPcntlSigs;
+        $this->dispatchPcntlSigs = true;
+
+        pcntl_signal(SIGINT, [$this, 'closeServer']);
+        pcntl_signal(SIGTERM, [$this, 'closeServer']);
 
         return $this;
+    }
+
+    public function closeServer()
+    {
+        $this->exit = true;
+        $this->getServerSocket()->shutdown()->close();
+        $this->log('Closing server connection before exiting');
     }
 
     /**
@@ -89,6 +100,13 @@ class Proxy
 
         while(true)
         {
+            // Ensures we do not read from a closed socket
+            if ($this->exit)
+            {
+                break;
+            }
+
+            // Here's a non-blocking socket read
             if (!$this->getServerSocket()->selectRead())
             {
                 usleep(10000);

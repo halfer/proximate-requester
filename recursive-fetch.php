@@ -24,8 +24,9 @@ use Spatie\Crawler\CrawlProfile;
 require 'vendor/autoload.php';
 
 $url =
-$baseUrl =
+$startUrl =
     'http://ilovephp.jondh.me.uk/';
+$pathRegex = '#^/en/tutorial#';
 
 // @todo We need to add a Guzzle plugin into the client, to make curl/header changes
 $client = new Client([
@@ -51,29 +52,36 @@ class MyCrawlObserver implements CrawlObserver
     }
 }
 
-// @todo Add regex crawl logic here (in shouldCrawl())
 class MyCrawlProfile implements CrawlProfile
 {
-    protected $baseUrl;
+    protected $startUrl;
+    protected $pathRegex;
+    protected $debug = false;
 
-    public function __construct(string $baseUrl)
+    /**
+     * Sets up some filtering settings for the crawler
+     *
+     * @param string $startUrl e.g. "http://www.example.com"
+     * @param string $pathRegex e.g. "#^/careers#"
+     */
+    public function __construct(string $startUrl, $pathRegex)
     {
-        $this->baseUrl = $baseUrl;
+        $this->startUrl = $startUrl;
+        $this->pathRegex = $pathRegex;
     }
 
     public function shouldCrawl(Url $url) : bool
     {
-        // @todo This needs to be generalised
-        $matchesRegex = strpos($url->path(), '/en/tutorial') === 0;
-        $matchesRoot = $url->path() === '/';
+        $matchesRegex = $this->regexMatch($url);
+        $matchesRoot = $this->startMatch($url);
 
         $shouldCrawl =
             $this->sameHost($url) &&
             ($matchesRegex || $matchesRoot);
 
-        if ($shouldCrawl)
+        if ($shouldCrawl && $this->debug)
         {
-            #echo sprintf("Should crawl %s\n", $url->path());
+            echo sprintf("Should crawl %s\n", $url->path());
         }
 
         return $shouldCrawl;
@@ -81,14 +89,24 @@ class MyCrawlProfile implements CrawlProfile
 
     protected function sameHost(Url $url)
     {
-        return parse_url($this->baseUrl, PHP_URL_HOST) === $url->host;
+        return parse_url($this->startUrl, PHP_URL_HOST) === $url->host;
+    }
+
+    protected function startMatch(Url $url)
+    {
+        return ((string) $url) == $this->startUrl;
+    }
+
+    protected function regexMatch(Url $url)
+    {
+        return preg_match($this->pathRegex, $url->path) === 1;
     }
 }
 
 $t = microtime(true);
 $crawler = new Crawler($client, 1);
 $crawler->
-    setCrawlProfile(new MyCrawlProfile($baseUrl))->
+    setCrawlProfile(new MyCrawlProfile($startUrl, $pathRegex))->
     setCrawlObserver(new MyCrawlObserver())->
     startCrawling($url);
 $et = microtime(true) - $t;

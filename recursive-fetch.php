@@ -19,6 +19,7 @@ use GuzzleHttp\RequestOptions;
 use Spatie\Crawler\Crawler;
 use Spatie\Crawler\Url;
 use Spatie\Crawler\CrawlObserver;
+use Spatie\Crawler\CrawlProfile;
 
 require 'vendor/autoload.php';
 
@@ -50,33 +51,24 @@ class MyCrawlObserver implements CrawlObserver
     }
 }
 
-class CrawlInternalUrls implements \Spatie\Crawler\CrawlProfile
+// @todo Add regex crawl logic here (in shouldCrawl())
+class MyCrawlProfile implements CrawlProfile
 {
-    protected $host = '';
+    protected $baseUrl;
 
     public function __construct(string $baseUrl)
     {
-        $this->host = parse_url($baseUrl, PHP_URL_HOST);
+        $this->baseUrl = $baseUrl;
     }
 
-    public function shouldCrawl(Url $url): bool
-    {
-        return $this->host === $url->host;
-    }
-}
-
-// @todo Add regex crawl logic here (in shouldCrawl())
-class MyCrawlProfile extends CrawlInternalUrls
-{
     public function shouldCrawl(Url $url) : bool
     {
-        $isInternal = parent::shouldCrawl($url);
         // @todo This needs to be generalised
         $matchesRegex = strpos($url->path(), '/en/tutorial') === 0;
         $matchesRoot = $url->path() === '/';
 
         $shouldCrawl =
-            $isInternal &&
+            $this->sameHost($url) &&
             ($matchesRegex || $matchesRoot);
 
         if ($shouldCrawl)
@@ -85,6 +77,11 @@ class MyCrawlProfile extends CrawlInternalUrls
         }
 
         return $shouldCrawl;
+    }
+
+    protected function sameHost(Url $url)
+    {
+        return parse_url($this->baseUrl, PHP_URL_HOST) === $url->host;
     }
 }
 

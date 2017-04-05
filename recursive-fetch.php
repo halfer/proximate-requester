@@ -19,7 +19,6 @@ use GuzzleHttp\RequestOptions;
 use Spatie\Crawler\Crawler;
 use Spatie\Crawler\Url;
 use Spatie\Crawler\CrawlObserver;
-use Spatie\Crawler\CrawlInternalUrls;
 
 require 'vendor/autoload.php';
 
@@ -51,11 +50,24 @@ class MyCrawlObserver implements CrawlObserver
     }
 }
 
+class CrawlInternalUrls implements \Spatie\Crawler\CrawlProfile
+{
+    protected $host = '';
+
+    public function __construct(string $baseUrl)
+    {
+        $this->host = parse_url($baseUrl, PHP_URL_HOST);
+    }
+
+    public function shouldCrawl(Url $url): bool
+    {
+        return $this->host === $url->host;
+    }
+}
+
 // @todo Add regex crawl logic here (in shouldCrawl())
 class MyCrawlProfile extends CrawlInternalUrls
 {
-    protected $visited = [];
-
     public function shouldCrawl(Url $url) : bool
     {
         $isInternal = parent::shouldCrawl($url);
@@ -63,43 +75,24 @@ class MyCrawlProfile extends CrawlInternalUrls
         $matchesRegex = strpos($url->path(), '/en/tutorial') === 0;
         $matchesRoot = $url->path() === '/';
 
-        // The crawler gets stuck if it can only visit a URL once
-        #$hasVisited = $this->hasVisited($url->path());
-        $hasVisited = false; // FIXME hack
-
-        // Mark as visited
-        $this->visited($url->path());
-
         $shouldCrawl =
             $isInternal &&
-            ($matchesRegex || $matchesRoot) &&
-            !$hasVisited;
+            ($matchesRegex || $matchesRoot);
 
         if ($shouldCrawl)
         {
-            echo sprintf("Should crawl %s\n", $url->path());
+            #echo sprintf("Should crawl %s\n", $url->path());
         }
 
         return $shouldCrawl;
     }
-
-    protected function visited($path)
-    {
-        if (!$this->hasVisited($path))
-        {
-            $this->visited[] = $path;
-        }
-    }
-
-    protected function hasVisited($path)
-    {
-        return in_array($path, $this->visited);
-    }
 }
 
-$crawler = new Crawler($client);
+$t = microtime(true);
+$crawler = new Crawler($client, 1);
 $crawler->
     setCrawlProfile(new MyCrawlProfile($baseUrl))->
     setCrawlObserver(new MyCrawlObserver())->
-    setConcurrency(1)->
     startCrawling($url);
+$et = microtime(true) - $t;
+echo sprintf("The crawl took %s sec\n", round($et, 1));

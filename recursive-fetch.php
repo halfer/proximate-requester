@@ -54,13 +54,46 @@ class MyCrawlObserver implements CrawlObserver
 // @todo Add regex crawl logic here (in shouldCrawl())
 class MyCrawlProfile extends CrawlInternalUrls
 {
+    protected $visited = [];
+
     public function shouldCrawl(Url $url) : bool
     {
-        return parent::shouldCrawl($url) &&
-        (
-            strpos($url->path(), '/en/tutorial') === 0 ||
-            $url->path() === '/'
-        );
+        $isInternal = parent::shouldCrawl($url);
+        // @todo This needs to be generalised
+        $matchesRegex = strpos($url->path(), '/en/tutorial') === 0;
+        $matchesRoot = $url->path() === '/';
+
+        // The crawler gets stuck if it can only visit a URL once
+        #$hasVisited = $this->hasVisited($url->path());
+        $hasVisited = false; // FIXME hack
+
+        // Mark as visited
+        $this->visited($url->path());
+
+        $shouldCrawl =
+            $isInternal &&
+            ($matchesRegex || $matchesRoot) &&
+            !$hasVisited;
+
+        if ($shouldCrawl)
+        {
+            echo sprintf("Should crawl %s\n", $url->path());
+        }
+
+        return $shouldCrawl;
+    }
+
+    protected function visited($path)
+    {
+        if (!$this->hasVisited($path))
+        {
+            $this->visited[] = $path;
+        }
+    }
+
+    protected function hasVisited($path)
+    {
+        return in_array($path, $this->visited);
     }
 }
 

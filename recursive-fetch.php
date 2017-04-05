@@ -14,21 +14,26 @@
 
 namespace Proximate;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Spatie\Crawler\Crawler;
+use Spatie\Crawler\Url;
 use Spatie\Crawler\CrawlObserver;
 use Spatie\Crawler\CrawlInternalUrls;
+
+require 'vendor/autoload.php';
 
 $url =
 $baseUrl =
     'http://ilovephp.jondh.me.uk/';
 
-// @todo Instantiate Crawler manually to inject own Crawler, in order to inject a Guzzle
-// plugin to make curl/header changes?
-Crawler::create()->
-    setCrawlProfile(new MyCrawlProfile($baseUrl))->
-    setCrawlObserver(new MyCrawlObserver())->
-    setConcurrency(1)->
-    startCrawling($url);
+// @todo We need to add a Guzzle plugin into the client, to make curl/header changes
+$client = new Client([
+    RequestOptions::COOKIES => true,
+    RequestOptions::CONNECT_TIMEOUT => 10,
+    RequestOptions::TIMEOUT => 10,
+    RequestOptions::ALLOW_REDIRECTS => true,
+]);
 
 class MyCrawlObserver implements CrawlObserver
 {
@@ -38,6 +43,7 @@ class MyCrawlObserver implements CrawlObserver
 
     public function hasBeenCrawled(Url $url, $response, Url $foundOnUrl = null)
     {
+        echo sprintf("Crawled URL: %s\n", $url->path());
     }
 
     public function finishedCrawling()
@@ -48,4 +54,19 @@ class MyCrawlObserver implements CrawlObserver
 // @todo Add regex crawl logic here (in shouldCrawl())
 class MyCrawlProfile extends CrawlInternalUrls
 {
+    public function shouldCrawl(Url $url) : bool
+    {
+        return parent::shouldCrawl($url) &&
+        (
+            strpos($url->path(), '/en/tutorial') === 0 ||
+            $url->path() === '/'
+        );
+    }
 }
+
+$crawler = new Crawler($client);
+$crawler->
+    setCrawlProfile(new MyCrawlProfile($baseUrl))->
+    setCrawlObserver(new MyCrawlObserver())->
+    setConcurrency(1)->
+    startCrawling($url);

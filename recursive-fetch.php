@@ -27,6 +27,10 @@ use Spatie\Crawler\Crawler;
 use Proximate\SpatieCrawler\Observer;
 use Proximate\SpatieCrawler\Profile;
 
+// Namespaces for logging
+use Monolog\Logger;
+use Monolog\Handler\ErrorLogHandler;
+
 require 'vendor/autoload.php';
 
 #$url = $startUrl = 'http://ilovephp.jondh.me.uk/';
@@ -35,8 +39,13 @@ require 'vendor/autoload.php';
 $url = $startUrl = 'https://blog.jondh.me.uk/';
 $pathRegex = '#^/category#';
 
+// Here is the optional logger to inject into the Guzzle middleware
+$logger = new Logger('stdout');
+$logger->pushHandler(new ErrorLogHandler());
+
 $stack = HandlerStack::create();
 $proxyMiddleware = new ProxyMiddleware();
+$proxyMiddleware->addLogger($logger);
 $stack->push($proxyMiddleware->getMiddleware());
 
 // Create the HTTP client

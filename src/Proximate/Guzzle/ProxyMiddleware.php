@@ -14,16 +14,25 @@ use Proximate\Proxy;
 
 class ProxyMiddleware
 {
+    use \Proximate\Logger;
+
+    /**
+     * Returns Guzzle middleware to redirect proxied HTTPS requests to plaintext endpoints
+     *
+     * @return callable
+     */
     public function getMiddleware()
     {
         return Middleware::mapRequest(function (RequestInterface $request) {
+
             // Special rules for HTTPS sites
             $uri = $request->getUri();
             if ($uri->getScheme() == 'https')
             {
-                echo sprintf("Detected HTTPS site: %s\n", $uri);
                 $newUri = $uri->withScheme('http');
-                echo sprintf("New URL: %s\n", $newUri);
+                $this->log(
+                    sprintf("Detected HTTPS site: %s, new URL is: %s", $uri, $newUri)
+                );
                 $request = $request->
                     withUri($newUri)->
                     withHeader(Proxy::REAL_URL_HEADER_NAME, (string) $uri);

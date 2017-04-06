@@ -15,7 +15,6 @@
 namespace Proximate;
 
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\RequestInterface;
 

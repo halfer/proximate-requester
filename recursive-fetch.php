@@ -10,6 +10,8 @@
  * While we could do the saving locally, it is nice to proxy it, as that creates a good
  * level of separation between functions. The alternative is to build an API to call to
  * store a response against a specific URL.
+ *
+ * @todo Upgrade Spatie\Crawler from 1.3 to 2.1.x?
  */
 
 namespace Proximate;
@@ -58,11 +60,17 @@ $client = new Client([
     'handler' => $stack,
 ]);
 
+// Set up classes for the crawler (logger is optional in both cases)
+$crawlObserver = new Observer();
+$crawlProfile = new Profile($startUrl, $pathRegex);
+$crawlObserver->addLogger($logger);
+#$crawlProfile->addLogger($logger); // Very verbose!
+
 $t = microtime(true);
 $crawler = new Crawler($client, 1);
 $crawler->
-    setCrawlProfile(new Profile($startUrl, $pathRegex))->
-    setCrawlObserver(new Observer())->
+    setCrawlProfile($crawlProfile)->
+    setCrawlObserver($crawlObserver)->
     startCrawling($url);
 $et = microtime(true) - $t;
 echo sprintf("The crawl took %s sec\n", round($et, 1));

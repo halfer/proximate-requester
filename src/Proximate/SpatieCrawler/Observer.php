@@ -11,13 +11,17 @@ use Spatie\Crawler\Url;
 
 class Observer implements CrawlObserver
 {
+    use \Proximate\Logger;
+
     public function willCrawl(Url $url)
     {
     }
 
     public function hasBeenCrawled(Url $url, $response, Url $foundOnUrl = null)
     {
-        echo sprintf("Crawled URL: %s\n", $url->path());
+        $this->log(
+            sprintf("Crawled URL: %s", $url->path())
+        );
     }
 
     public function finishedCrawling()

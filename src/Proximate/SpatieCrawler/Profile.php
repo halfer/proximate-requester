@@ -11,9 +11,10 @@ use Spatie\Crawler\Url;
 
 class Profile implements CrawlProfile
 {
+    use \Proximate\Logger;
+
     protected $startUrl;
     protected $pathRegex;
-    protected $debug = false;
 
     /**
      * Sets up some filtering settings for the crawler
@@ -36,9 +37,11 @@ class Profile implements CrawlProfile
             $this->sameHost($url) &&
             ($matchesRegex || $matchesRoot);
 
-        if ($shouldCrawl && $this->debug)
+        if ($shouldCrawl)
         {
-            echo sprintf("Should crawl %s\n", $url->path());
+            $this->log(
+                sprintf("Should crawl %s\n", $url)
+            );
         }
 
         return $shouldCrawl;

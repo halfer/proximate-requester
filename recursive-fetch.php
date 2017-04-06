@@ -14,8 +14,14 @@
 
 namespace Proximate;
 
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\Middleware;
+use Psr\Http\Message\RequestInterface;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+
 use Spatie\Crawler\Crawler;
 use Spatie\Crawler\Url;
 use Spatie\Crawler\CrawlObserver;
@@ -28,12 +34,34 @@ $startUrl =
     'http://ilovephp.jondh.me.uk/';
 $pathRegex = '#^/en/tutorial#';
 
-// @todo We need to add a Guzzle plugin into the client, to make curl/header changes
+$stack = new HandlerStack();
+$stack->setHandler(new CurlHandler());
+$stack->push(Middleware::redirect());
+$stack->push(
+    Middleware::mapRequest(function (RequestInterface $request) {
+        echo "Middleware running, woop\n";
+        // Special rules for HTTPS sites
+        $uri = $request->getUri();
+        if ($uri->getScheme() == 'https')
+        {
+            echo "Detected HTTP site\n";
+            $newScheme = $uri->withScheme('http');
+            #$request = $request->
+            #    withUri($uri)->
+            #    withHeader(Proxy::REAL_URL_HEADER_NAME, (string) $newScheme);
+        }
+
+        return $request;
+    })
+);
+
+// Create the HTTP client
 $client = new Client([
     RequestOptions::COOKIES => true,
     RequestOptions::CONNECT_TIMEOUT => 10,
     RequestOptions::TIMEOUT => 10,
     RequestOptions::ALLOW_REDIRECTS => true,
+    'handler' => $stack,
 ]);
 
 class MyCrawlObserver implements CrawlObserver

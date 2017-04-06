@@ -3,10 +3,12 @@
 /**
  * Class to proxy HTTP/HTTPS endpoints via an HTTP proxy so they can be recorded
  *
- * @todo Add a thin wrapper around curl to increase testability
+ * @todo Add a thin wrapper around curl to increase testability, or just use Guzzle!
  */
 
 namespace Proximate;
+
+use Proximate\Exception\Server as ServerException;
 
 class Client
 {
@@ -159,14 +161,12 @@ class Client
 
     /**
      * Returns response body or throws exception if not set
-     *
-     * @todo Use a specialised exception
      */
     public function getResponseBody()
     {
         if (is_null($this->responseBody))
         {
-            throw new \Exception(
+            throw new ServerException(
                 "A successful response body is not available"
             );
         }
@@ -176,14 +176,12 @@ class Client
 
     /**
      * Returns response headers or throws exception if not set
-     *
-     * @todo Use a specialised exception
      */
     public function getResponseHeaders()
     {
         if (is_null($this->responseHeaders))
         {
-            throw new \Exception(
+            throw new ServerException(
                 "A successful response header array is not available"
             );
         }

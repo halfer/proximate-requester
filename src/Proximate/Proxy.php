@@ -41,8 +41,6 @@ class Proxy
     /**
      * Initialises the server listening
      *
-     * @todo Swap the die() exits for specialised exceptions
-     *
      * @return $this
      */
     public function checkSocketsAvailable()
@@ -53,7 +51,7 @@ class Proxy
             {
                 $message = sprintf("Error: extension `%s` not loaded\n", $module);
                 $this->log($message, Logger::CRITICAL);
-                die($message);
+                throw new Exception\Init($message);
             }
         }
 
@@ -138,8 +136,6 @@ class Proxy
 
     /**
      * We've received an HTTP connection
-     *
-     * @todo Don't fetch and save page if it is already cached
      *
      * @param string $input
      */

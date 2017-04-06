@@ -36,9 +36,16 @@ $cacheAdapter = new FilesystemCacheAdapter($filesystem);
 $logger = new Logger('stdout');
 $logger->pushHandler(new ErrorLogHandler());
 
-$proxier = new Proximate\Proxy($client, $cachePool, $cacheAdapter);
-$proxier->
-    checkSocketsAvailable()->
-    addLogger($logger)->
-    handleTerminationSignals()->
-    listenLoop();
+try
+{
+    $proxier = new Proximate\Proxy($client, $cachePool, $cacheAdapter);
+    $proxier->
+        checkSocketsAvailable()->
+        addLogger($logger)->
+        handleTerminationSignals()->
+        listenLoop();
+}
+catch (\Proximate\Exception\Init $e)
+{
+    echo $e->getMessage() . "\n";
+}

@@ -22,9 +22,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
 use Spatie\Crawler\Crawler;
-use Spatie\Crawler\Url;
-use Spatie\Crawler\CrawlObserver;
-use Spatie\Crawler\CrawlProfile;
+use Proximate\SpatieCrawler\Observer;
+use Proximate\SpatieCrawler\Profile;
 
 require 'vendor/autoload.php';
 
@@ -63,78 +62,11 @@ $client = new Client([
     'handler' => $stack,
 ]);
 
-class MyCrawlObserver implements CrawlObserver
-{
-    public function willCrawl(Url $url)
-    {
-    }
-
-    public function hasBeenCrawled(Url $url, $response, Url $foundOnUrl = null)
-    {
-        echo sprintf("Crawled URL: %s\n", $url->path());
-    }
-
-    public function finishedCrawling()
-    {
-    }
-}
-
-class MyCrawlProfile implements CrawlProfile
-{
-    protected $startUrl;
-    protected $pathRegex;
-    protected $debug = false;
-
-    /**
-     * Sets up some filtering settings for the crawler
-     *
-     * @param string $startUrl e.g. "http://www.example.com"
-     * @param string $pathRegex e.g. "#^/careers#"
-     */
-    public function __construct(string $startUrl, $pathRegex)
-    {
-        $this->startUrl = $startUrl;
-        $this->pathRegex = $pathRegex;
-    }
-
-    public function shouldCrawl(Url $url) : bool
-    {
-        $matchesRegex = $this->regexMatch($url);
-        $matchesRoot = $this->startMatch($url);
-
-        $shouldCrawl =
-            $this->sameHost($url) &&
-            ($matchesRegex || $matchesRoot);
-
-        if ($shouldCrawl && $this->debug)
-        {
-            echo sprintf("Should crawl %s\n", $url->path());
-        }
-
-        return $shouldCrawl;
-    }
-
-    protected function sameHost(Url $url)
-    {
-        return parse_url($this->startUrl, PHP_URL_HOST) === $url->host;
-    }
-
-    protected function startMatch(Url $url)
-    {
-        return ((string) $url) == $this->startUrl;
-    }
-
-    protected function regexMatch(Url $url)
-    {
-        return preg_match($this->pathRegex, $url->path) === 1;
-    }
-}
-
 $t = microtime(true);
 $crawler = new Crawler($client, 1);
 $crawler->
-    setCrawlProfile(new MyCrawlProfile($startUrl, $pathRegex))->
-    setCrawlObserver(new MyCrawlObserver())->
+    setCrawlProfile(new Profile($startUrl, $pathRegex))->
+    setCrawlObserver(new Observer())->
     startCrawling($url);
 $et = microtime(true) - $t;
 echo sprintf("The crawl took %s sec\n", round($et, 1));

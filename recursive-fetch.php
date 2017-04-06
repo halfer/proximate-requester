@@ -14,13 +14,15 @@
 
 namespace Proximate;
 
+// Namespaces for the injection of a Proximate tweaking device into Guzzle
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use Psr\Http\Message\RequestInterface;
+use Proximate\Guzzle\ProxyMiddleware;
 
+// Namespaces for the creation of a Guzzle client
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
+// Namespaces for the creation and set-up of the crawler
 use Spatie\Crawler\Crawler;
 use Proximate\SpatieCrawler\Observer;
 use Proximate\SpatieCrawler\Profile;
@@ -34,23 +36,8 @@ $url = $startUrl = 'https://blog.jondh.me.uk/';
 $pathRegex = '#^/category#';
 
 $stack = HandlerStack::create();
-$stack->push(
-    Middleware::mapRequest(function (RequestInterface $request) {
-        // Special rules for HTTPS sites
-        $uri = $request->getUri();
-        if ($uri->getScheme() == 'https')
-        {
-            echo sprintf("Detected HTTPS site: %s\n", $uri);
-            $newUri = $uri->withScheme('http');
-            echo sprintf("New URL: %s\n", $newUri);
-            $request = $request->
-                withUri($newUri)->
-                withHeader(Proxy::REAL_URL_HEADER_NAME, (string) $uri);
-        }
-
-        return $request;
-    })
-);
+$proxyMiddleware = new ProxyMiddleware();
+$stack->push($proxyMiddleware->getMiddleware());
 
 // Create the HTTP client
 $client = new Client([

@@ -28,24 +28,25 @@ use Spatie\Crawler\CrawlProfile;
 
 require 'vendor/autoload.php';
 
-$url =
-$startUrl =
-    'http://ilovephp.jondh.me.uk/';
-$pathRegex = '#^/en/tutorial#';
+#$url = $startUrl = 'http://ilovephp.jondh.me.uk/';
+#$pathRegex = '#^/en/tutorial#';
+
+$url = $startUrl = 'https://blog.jondh.me.uk/';
+$pathRegex = '#^/category#';
 
 $stack = HandlerStack::create();
 $stack->push(
     Middleware::mapRequest(function (RequestInterface $request) {
-        echo "Middleware running, woop\n";
         // Special rules for HTTPS sites
         $uri = $request->getUri();
         if ($uri->getScheme() == 'https')
         {
-            echo "Detected HTTP site\n";
-            $newScheme = $uri->withScheme('http');
-            #$request = $request->
-            #    withUri($uri)->
-            #    withHeader(Proxy::REAL_URL_HEADER_NAME, (string) $newScheme);
+            echo sprintf("Detected HTTPS site: %s\n", $uri);
+            $newUri = $uri->withScheme('http');
+            echo sprintf("New URL: %s\n", $newUri);
+            $request = $request->
+                withUri($newUri)->
+                withHeader(Proxy::REAL_URL_HEADER_NAME, (string) $uri);
         }
 
         return $request;
@@ -58,6 +59,7 @@ $client = new Client([
     RequestOptions::CONNECT_TIMEOUT => 10,
     RequestOptions::TIMEOUT => 10,
     RequestOptions::ALLOW_REDIRECTS => true,
+    RequestOptions::PROXY => 'localhost:9001',
     'handler' => $stack,
 ]);
 

@@ -34,9 +34,7 @@ $startUrl =
     'http://ilovephp.jondh.me.uk/';
 $pathRegex = '#^/en/tutorial#';
 
-$stack = new HandlerStack();
-$stack->setHandler(new CurlHandler());
-$stack->push(Middleware::redirect());
+$stack = HandlerStack::create();
 $stack->push(
     Middleware::mapRequest(function (RequestInterface $request) {
         echo "Middleware running, woop\n";

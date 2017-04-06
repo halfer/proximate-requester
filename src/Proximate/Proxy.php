@@ -14,18 +14,18 @@ namespace Proximate;
 use Socket\Raw\Socket;
 use Psr\Cache\CacheItemPoolInterface;
 use Proximate\CacheAdapter\BaseAdapter as CacheAdapter;
-use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 
 class Proxy
 {
+    use \Proximate\Logger;
+
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
 
     protected $server;
     protected $client;
     protected $cachePool;
     protected $cacheAdapter;
-    protected $logger;
     protected $dispatchPcntlSigs = false;
     protected $exit = false;
     protected $writeBuffer;
@@ -56,19 +56,6 @@ class Proxy
                 die($message);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * Sets up a PSR-compliant logger on this class
-     *
-     * @param LoggerInterface $logger
-     * @return $this
-     */
-    public function addLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
 
         return $this;
     }
@@ -516,20 +503,5 @@ class Proxy
     protected function getCacheAdapter()
     {
         return $this->cacheAdapter;
-    }
-
-    /**
-     * Logs a message if a logger has been provided, otherwise ignores log request
-     *
-     * @param string $message
-     * @param integer $level
-     */
-    protected function log($message, $level = Logger::INFO)
-    {
-        if ($logger = $this->logger)
-        {
-            /* @var $logger LoggerInterface */
-            $logger->log($level, $message);
-        }
     }
 }

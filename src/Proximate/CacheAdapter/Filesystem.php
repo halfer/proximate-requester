@@ -20,10 +20,21 @@ class Filesystem extends BaseAdapter
 
     public function countCacheItems()
     {
-        $items = $this->getFlysystemAdapter()->listContents('cache');
-        $count = count($items);
+        $count = count($this->getCacheKeys());
 
         return $count;
+    }
+
+    /**
+     * Returns all cache keys
+     *
+     * If the cache might get big, we could swap this for a generator, to conserve memory?
+     *
+     * @return array
+     */
+    protected function getCacheKeys()
+    {
+        return $this->getFlysystemAdapter()->listContents('cache');
     }
 
     /**

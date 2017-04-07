@@ -160,7 +160,8 @@ class Proxy
         if ($cacheItem->isHit())
         {
             // If it does then read it here
-            $targetSiteData = $cacheItem->get();
+            $cacheData = $cacheItem->get();
+            $targetSiteData = $this->getCacheAdapter()->loadResponse($cacheData);
             $this->log(
                 sprintf(
                     "Retrieved page of %d bytes from cache against key %s",
@@ -175,7 +176,10 @@ class Proxy
             $ok = $this->fetch($url, $method);
             if ($ok)
             {
-                $targetSiteData = $this->saveToCache($key);
+                $targetSiteData = $this->saveToCache(
+                    $key,
+                    ['url' => $url, 'method' => $method, 'key' => $key, ]
+                );
             }
             else
             {
@@ -228,7 +232,7 @@ class Proxy
         return $result !== false;
     }
 
-    protected function saveToCache($key)
+    protected function saveToCache($key, array $metadata)
     {
         $targetSiteData = $this->assembleOutput(
             $this->implodeHeaders(
@@ -239,15 +243,21 @@ class Proxy
             $this->getBody($this->getOutputBuffer())
         );
 
+        // Convert the response to whatever the cache format is
+        $cacheData = $this->getCacheAdapter()->saveResponse(
+            $targetSiteData,
+            $metadata
+        );
+
         // Save item to the cache
         $item = $this->getCachePool()->getItem($key);
-        $item->set($targetSiteData);
+        $item->set($cacheData);
         $this->getCachePool()->save($item);
 
         $this->log(
             sprintf(
                 "Fetched page of %d bytes and saving against cache key `%s`",
-                strlen($targetSiteData),
+                strlen($cacheData),
                 $key
             )
         );

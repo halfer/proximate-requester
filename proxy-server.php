@@ -4,9 +4,6 @@
  * Code to set up a simple HTTP proxy server
  */
 
-// Enables pcntl signal catching
-declare(ticks = 1);
-
 require_once 'vendor/autoload.php';
 
 use Socket\Raw\Factory as SocketFactory;

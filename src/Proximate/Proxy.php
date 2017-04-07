@@ -68,6 +68,12 @@ class Proxy
         return $this;
     }
 
+    /**
+     * Close the server down in the case of user exit
+     *
+     * @todo I'm not actually sure this closes the connection, sometimes when reconnecting
+     * it takes ~30 sec for the port to be ready to listen on again
+     */
     public function closeServer()
     {
         $this->exit = true;

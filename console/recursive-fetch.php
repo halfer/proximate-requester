@@ -35,7 +35,8 @@ use Proximate\SpatieCrawler\Profile;
 use Monolog\Logger;
 use Monolog\Handler\ErrorLogHandler;
 
-require 'vendor/autoload.php';
+$rootPath = realpath(__DIR__ . '/..');
+require_once $rootPath . '/vendor/autoload.php';
 
 #$url = $startUrl = 'http://ilovephp.jondh.me.uk/';
 #$pathRegex = '#^/en/tutorial#';

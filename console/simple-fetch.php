@@ -4,7 +4,8 @@
  * Code to kick off the proxy-recording of a HTTPS site
  */
 
-require_once 'vendor/autoload.php';
+$rootPath = realpath(__DIR__ . '/..');
+require_once $rootPath . '/vendor/autoload.php';
 
 $requester = new Proximate\Client('localhost:9001');
 

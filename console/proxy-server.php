@@ -4,7 +4,8 @@
  * Code to set up a simple HTTP proxy server
  */
 
-require_once 'vendor/autoload.php';
+$rootPath = realpath(__DIR__ . '/..');
+require_once $rootPath . '/vendor/autoload.php';
 
 use Socket\Raw\Factory as SocketFactory;
 
@@ -22,7 +23,7 @@ $factory = new SocketFactory();
 $client = $factory->createServer('localhost:9001');
 
 // This sets up the cache storage system
-$filesystemAdapter = new LocalFileAdapter(__DIR__);
+$filesystemAdapter = new LocalFileAdapter($rootPath);
 $filesystem = new Filesystem($filesystemAdapter);
 $cachePool = new FilesystemCachePool($filesystem);
 

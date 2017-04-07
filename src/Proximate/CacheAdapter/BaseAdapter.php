@@ -38,12 +38,12 @@ abstract class BaseAdapter
     /**
      * The simplest possible response loader, just loads it as-is
      *
-     * @param string $cachedString
+     * @param string $cachedData
      * @return string
      */
-    public function loadResponse($cachedString)
+    public function loadResponse($cachedData)
     {
-        return $cachedString;
+        return $cachedData;
     }
 
     /**

@@ -90,6 +90,16 @@ class FilesystemTest extends TestCase
         return [1, 2, 3, 4, 5, 6, 7, ];
     }
 
+    public function testSaveResponse()
+    {
+        $this->markTestIncomplete(); // @todo Missing test
+    }
+
+    public function testLoadResponse()
+    {
+        $this->markTestIncomplete(); // @todo Missing test
+    }
+
     protected function getCacheAdapter()
     {
         return new Filesystem($this->getMockedFlysystem());

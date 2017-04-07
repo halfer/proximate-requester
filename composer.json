@@ -11,5 +11,9 @@
       "psr-0" : {
         "Proximate": "src/"
       }
+    },
+    "require-dev": {
+        "mockery/mockery": "1.0.0-alpha1",
+        "phpunit/phpunit": "^6.1"
     }
 }

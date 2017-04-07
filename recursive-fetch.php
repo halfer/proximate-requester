@@ -11,7 +11,9 @@
  * level of separation between functions. The alternative is to build an API to call to
  * store a response against a specific URL.
  *
- * @todo Upgrade Spatie\Crawler from 1.3 to 2.1.x?
+ * @todo Upgrade Spatie\Crawler from 1.3 to 2.1.x? (It looks like 1.3 does not take the
+ * query string into account when differentiating URLs, see
+ * https://github.com/spatie/crawler/issues/59).
  */
 
 namespace Proximate;

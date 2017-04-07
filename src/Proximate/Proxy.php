@@ -5,6 +5,7 @@
  *
  * @todo Publish to Github and set up Travis HTTP and HTTPS tests
  * @todo Add a thin wrapper around curl to increase testability
+ * @todo Make the non-blocking sleep delay configurable
  */
 
 namespace Proximate;

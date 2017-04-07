@@ -12,6 +12,8 @@ use Proximate\Exception\Server as ServerException;
 
 class Client
 {
+    use Curl;
+
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
 
     protected $proxyUrl;
@@ -110,7 +112,10 @@ class Client
 
         // Do a curl fetch
         $curl = curl_init($this->getUrl());
-        curl_setopt_array($curl, $this->getCurlOpts($method));
+        curl_setopt_array(
+            $curl,
+            $this->getCurlOptsCustom($method)
+        );
         $response = curl_exec($curl);
         if ($response !== false)
         {
@@ -128,35 +133,15 @@ class Client
      *
      * @return array
      */
-    protected function getCurlOpts($method)
+    protected function getCurlOptsCustom($method)
     {
-        if ($method == 'GET')
-        {
-            $additional = [];
-        }
-        elseif ($method == 'POST')
-        {
-            $additional['CURLOPT_POST'] = 1;
-        }
-        else
-        {
-            // @todo Add custom method
-            // http://stackoverflow.com/q/13420952
-            $additional = [];
-        }
-
-        return [
-            CURLOPT_PROXY => $this->proxyUrl,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_HEADER => 1,
-            CURLOPT_VERBOSE => 1,
-            CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
-            CURLOPT_TIMEOUT => 15,
-            CURLOPT_NOPROGRESS => 1,
-            CURLOPT_VERBOSE => 0,
-            CURLOPT_AUTOREFERER => 1,
-            CURLOPT_FOLLOWLOCATION => 1,
-        ] + $additional;
+        return
+            $this->getCurlOpts($method) +
+            [
+                CURLOPT_PROXY => $this->proxyUrl,
+                CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
+                CURLOPT_FOLLOWLOCATION => 1,
+            ];
     }
 
     /**

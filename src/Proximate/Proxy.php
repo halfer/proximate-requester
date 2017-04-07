@@ -19,6 +19,7 @@ use Monolog\Logger;
 class Proxy
 {
     use \Proximate\Logger;
+    use Curl;
 
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
 
@@ -205,7 +206,10 @@ class Proxy
         $this->resetBuffer();
 
         $curl = curl_init($url);
-        curl_setopt_array($curl, $this->getCurlOpts($method));
+        curl_setopt_array(
+            $curl,
+            $this->getCurlOptsCustom($method)
+        );
         $result = curl_exec($curl);
 
         if ($result === false) {
@@ -272,35 +276,15 @@ class Proxy
      *
      * @return array
      */
-    protected function getCurlOpts($method)
+    protected function getCurlOptsCustom($method)
     {
-        if ($method == 'GET')
-        {
-            $additional = [];
-        }
-        elseif ($method == 'POST')
-        {
-            $additional['CURLOPT_POST'] = 1;
-        }
-        else
-        {
-            // @todo Add custom method
-            // http://stackoverflow.com/q/13420952
-            $additional = [];
-        }
-
-        return [
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_HEADER => 1,
-            CURLOPT_VERBOSE => 1,
-            CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
-            CURLOPT_TIMEOUT => 15,
-            CURLOPT_NOPROGRESS => 1,
-            CURLOPT_VERBOSE => 0,
-            CURLOPT_AUTOREFERER => 1,
-            CURLOPT_FOLLOWLOCATION => 0,
-            CURLOPT_WRITEFUNCTION => [$this, 'outputToBuffer'],
-        ] + $additional;
+        return
+            $this->getCurlOpts($method) +
+            [
+                CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
+                CURLOPT_FOLLOWLOCATION => 0,
+                CURLOPT_WRITEFUNCTION => [$this, 'outputToBuffer'],
+            ];
     }
 
     protected function getOutputBuffer()

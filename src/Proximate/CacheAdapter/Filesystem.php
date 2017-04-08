@@ -12,12 +12,24 @@ use Proximate\Exception\Server;
 class Filesystem extends BaseAdapter
 {
     protected $flysystemAdapter;
-    protected $folder;
+    protected $folder = 'cache';
 
-    public function __construct(FlysystemAdapter $flysystemAdapter, $folder = 'cache')
+    public function __construct(FlysystemAdapter $flysystemAdapter)
     {
         $this->flysystemAdapter = $flysystemAdapter;
+    }
+
+    /**
+     * Sets the name of the cache folder created inside the Flysystem root
+     *
+     * @param string $folder
+     * @return $this
+     */
+    public function setCacheFolder($folder)
+    {
         $this->folder = $folder;
+
+        return $this;
     }
 
     public function countCacheItems()

@@ -76,4 +76,31 @@ abstract class BaseAdapter
 
         return $items;
     }
+
+    /**
+     * Looks up a single cache item by its key
+     *
+     * @todo Is it worth looking at isHit() in case a request is made for a non-existent key?
+     *
+     * @param CacheItemPoolInterface $cachePool
+     * @param string $key
+     * @return array
+     */
+    public function readCacheItem(CacheItemPoolInterface $cachePool, $key)
+    {
+        $item = $cachePool->getItem($key);
+
+        return $item->get();
+    }
+
+    /**
+     * Requests a cache item to be deleted
+     *
+     * @param CacheItemPoolInterface $cachePool
+     * @param string $key
+     */
+    public function expireCacheItem(CacheItemPoolInterface $cachePool, $key)
+    {
+        $cachePool->deleteItem($key);
+    }
 }

@@ -1,4 +1,5 @@
 {
+    "name": "halferbits/proximate-requester",
     "require": {
         "clue/socket-raw": "^1.2",
         "psr/log": "^1.0",

@@ -13,6 +13,7 @@ namespace Proximate\Proxy;
 use Socket\Raw\Socket;
 use Psr\Cache\CacheItemPoolInterface;
 use Proximate\CacheAdapter\BaseAdapter as CacheAdapter;
+use Proximate\Exception\Init as InitException;
 use Monolog\Logger;
 
 class Proxy
@@ -51,7 +52,7 @@ class Proxy
             {
                 $message = sprintf("Error: extension `%s` not loaded\n", $module);
                 $this->log($message, Logger::CRITICAL);
-                throw new Exception\Init($message);
+                throw new InitException($message);
             }
         }
 

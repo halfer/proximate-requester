@@ -56,6 +56,8 @@ class Filesystem extends BaseAdapter
      *
      * Note we do not do any serialisation here, the cache will do that.
      *
+     * @todo Rename this, it does not do any saving! How about convertResponseToCache?
+     *
      * @param string $response
      * @param array $metadata
      * @return array
@@ -87,6 +89,8 @@ class Filesystem extends BaseAdapter
      * Note we do not do any de-serialisation here, the cache will do that. Ideally I'd
      * strongly type the parameter here, but since PHP doesn't like it when a method
      * signature disagrees with the parent implementation, I will leave it un-hinted.
+     *
+     * @todo Rename this, it does not do any loading! How about convertCacheToResponse?
      *
      * @param array $cachedData
      * @return string

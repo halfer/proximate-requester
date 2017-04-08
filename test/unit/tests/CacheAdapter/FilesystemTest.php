@@ -94,7 +94,12 @@ class FilesystemTest extends TestCase
 
     public function testSaveResponse()
     {
-        $this->markTestIncomplete(); // @todo Missing test
+        $response = "This is a response";
+        $metadata = $this->getDemoMetadata();
+        $converted = $this->getCacheAdapter()->saveResponse($response, $metadata);
+
+        $expected = array_merge($metadata, ['response' => $response]);
+        $this->assertEquals($expected, $converted);
     }
 
     /**
@@ -106,16 +111,21 @@ class FilesystemTest extends TestCase
     public function testSaveBadResponse($missingKey)
     {
         $response = "This is a response";
-        $metadata = [
-            'url' => 'http://example.com/page',
-            'method' => 'GET',
-            'key' => 'mykey',
-        ];
+        $metadata = $this->getDemoMetadata();
 
         // Emulate this key not being set, so an error is thrown
         unset($metadata[$missingKey]);
 
         $this->getCacheAdapter()->saveResponse($response, $metadata);
+    }
+
+    protected function getDemoMetadata()
+    {
+        return [
+            'url' => 'http://example.com/page',
+            'method' => 'GET',
+            'key' => 'mykey',
+        ];
     }
 
     public function missingMetadataKeyDataProvider()
@@ -129,7 +139,15 @@ class FilesystemTest extends TestCase
 
     public function testLoadResponse()
     {
-        $this->markTestIncomplete(); // @todo Missing test
+        $response = "This is a response";
+        $metadata = $this->getDemoMetadata();
+        $cachedData = array_merge(
+            $metadata,
+            ['response' => $response, ]
+        );
+
+        $converted = $this->getCacheAdapter()->loadResponse($cachedData);
+        $this->assertEquals($response, $converted);
     }
 
     public function testReadCacheItem()

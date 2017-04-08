@@ -3,7 +3,7 @@
 /**
  * Class to scan headers and determine whether to modify the required protocol
  *
- * @todo Publish to Github and set up Travis HTTP and HTTPS tests
+ * @todo Set up Travis HTTP and HTTPS tests
  * @todo Add a thin wrapper around curl to increase testability
  * @todo Make the non-blocking sleep delay configurable
  */

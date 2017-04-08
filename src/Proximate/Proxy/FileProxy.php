@@ -2,8 +2,6 @@
 
 /**
  * Some glue code to set up a file-based Proximate proxy server
- *
- * @todo Add a fluent setter to change the 'cache' subdir
  */
 
 namespace Proximate\Proxy;
@@ -35,8 +33,11 @@ class FileProxy
 
     /**
      * Call this to do more heavy-duty setup than we can do in the ctor
+     *
+     * @param string $folder The sub-folder name in which cache items are stored
+     * @return self
      */
-    public function setup()
+    public function setup($folder = 'cache')
     {
         // Here is the basis of the listening system
         $factory = new SocketFactory();
@@ -45,10 +46,11 @@ class FileProxy
         // This sets up the cache storage system
         $filesystemAdapter = new LocalFileAdapter($this->rootPath);
         $filesystem = new Filesystem($filesystemAdapter);
-        $cachePool = new FilesystemCachePool($filesystem);
+        $cachePool = new FilesystemCachePool($filesystem, $folder);
 
         // Here is a dependency to perform additional ops on the cache
         $cacheAdapter = new FilesystemCacheAdapter($filesystem);
+        $cacheAdapter->setCacheFolder($folder);
 
         // Here is the optional logger to inject
         $logger = new Logger('stdout');

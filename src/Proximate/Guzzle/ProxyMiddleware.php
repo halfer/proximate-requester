@@ -10,7 +10,7 @@ namespace Proximate\Guzzle;
 
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\RequestInterface;
-use Proximate\Proxy;
+use Proximate\Proxy\Proxy;
 
 class ProxyMiddleware
 {

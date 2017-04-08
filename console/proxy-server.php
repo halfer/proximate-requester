@@ -18,6 +18,8 @@ use Proximate\CacheAdapter\Filesystem as FilesystemCacheAdapter;
 use Monolog\Logger;
 use Monolog\Handler\ErrorLogHandler;
 
+use Proximate\Proxy\Proxy;
+
 // Here is the basis of the listening system
 $factory = new SocketFactory();
 $client = $factory->createServer('localhost:9001');
@@ -36,7 +38,7 @@ $logger->pushHandler(new ErrorLogHandler());
 
 try
 {
-    $proxier = new Proximate\Proxy($client, $cachePool, $cacheAdapter);
+    $proxier = new Proxy($client, $cachePool, $cacheAdapter);
     $proxier->
         checkSocketsAvailable()->
         addLogger($logger)->

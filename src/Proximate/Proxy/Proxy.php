@@ -8,7 +8,7 @@
  * @todo Make the non-blocking sleep delay configurable
  */
 
-namespace Proximate;
+namespace Proximate\Proxy;
 
 use Socket\Raw\Socket;
 use Psr\Cache\CacheItemPoolInterface;
@@ -18,7 +18,7 @@ use Monolog\Logger;
 class Proxy
 {
     use \Proximate\Logger;
-    use Curl;
+    use \Proximate\Curl;
 
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
 

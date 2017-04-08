@@ -8,10 +8,12 @@
 namespace Proximate\CacheAdapter;
 
 use Psr\Cache\CacheItemPoolInterface;
+use Proximate\Exception\Init as InitException;
 
 abstract class BaseAdapter
 {
     protected $metadata = [];
+    protected $cachePool;
 
     /**
      * Returns the number of items in the cache
@@ -69,10 +71,10 @@ abstract class BaseAdapter
      * @param integer $itemsPerPage
      * @return array
      */
-    public function getPageOfCacheItems(CacheItemPoolInterface $cachePool, $pageNo, $itemsPerPage)
+    public function getPageOfCacheItems($pageNo, $itemsPerPage)
     {
         $keys = $this->getPageOfCacheKeys($pageNo, $itemsPerPage);
-        $items = $cachePool->getItems($keys);
+        $items = $this->getCacheItemPoolInterface()->getItems($keys);
 
         return $items;
     }
@@ -82,13 +84,12 @@ abstract class BaseAdapter
      *
      * @todo Is it worth looking at isHit() in case a request is made for a non-existent key?
      *
-     * @param CacheItemPoolInterface $cachePool
      * @param string $key
      * @return array
      */
-    public function readCacheItem(CacheItemPoolInterface $cachePool, $key)
+    public function readCacheItem($key)
     {
-        $item = $cachePool->getItem($key);
+        $item = $this->getCacheItemPoolInterface()->getItem($key);
 
         return $item->get();
     }
@@ -96,11 +97,38 @@ abstract class BaseAdapter
     /**
      * Requests a cache item to be deleted
      *
-     * @param CacheItemPoolInterface $cachePool
      * @param string $key
      */
-    public function expireCacheItem(CacheItemPoolInterface $cachePool, $key)
+    public function expireCacheItem($key)
     {
-        $cachePool->deleteItem($key);
+        $this->getCacheItemPoolInterface()->deleteItem($key);
+    }
+
+    /**
+     * Fluent setter to set the cache pool
+     *
+     * (This could go in a ctor, but it's not needed for everything, so I'd rather use a getter
+     * that blows up on failure).
+     *
+     * @param CacheItemPoolInterface $cachePool
+     * @return $this
+     */
+    public function setCacheItemPoolInterface(CacheItemPoolInterface $cachePool)
+    {
+        $this->cachePool = $cachePool;
+
+        return $this;
+    }
+
+    protected function getCacheItemPoolInterface()
+    {
+        if (!$this->cachePool)
+        {
+            throw new InitException(
+                "Cache pool not set on this CacheAdapter"
+            );
+        }
+
+        return $this->cachePool;
     }
 }

@@ -72,7 +72,8 @@ class FilesystemTest extends TestCase
 
         $result = $this->
             getCacheAdapter()->
-            getPageOfCacheItems($cachePool, 1, count($cacheItems));
+            setCacheItemPoolInterface($cachePool)->
+            getPageOfCacheItems(1, count($cacheItems));
         $this->assertEquals($cacheItems, $result);
     }
 

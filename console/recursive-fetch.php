@@ -59,7 +59,7 @@ $client = new Client([
     RequestOptions::CONNECT_TIMEOUT => 10,
     RequestOptions::TIMEOUT => 10,
     RequestOptions::ALLOW_REDIRECTS => true,
-    RequestOptions::PROXY => 'localhost:9001',
+    RequestOptions::PROXY => 'localhost:8081',
     'handler' => $stack,
 ]);
 

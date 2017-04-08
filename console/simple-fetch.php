@@ -7,7 +7,7 @@
 $rootPath = realpath(__DIR__ . '/..');
 require_once $rootPath . '/vendor/autoload.php';
 
-$requester = new Proximate\Client('localhost:9001');
+$requester = new Proximate\Client('localhost:8081');
 
 // Here's a plaintext version
 #$url = 'http://ilovephp.jondh.me.uk/';

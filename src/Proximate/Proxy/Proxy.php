@@ -87,7 +87,12 @@ class Proxy
      */
     public function listenLoop()
     {
-        $this->log("Starting proxy listener");
+        $this->log(
+            sprintf(
+                "Starting proxy listener on %s",
+                $this->getServerSocket()->getSockName()
+            )
+        );
         $this->getServerSocket()->setBlocking(false);
 
         while(true)

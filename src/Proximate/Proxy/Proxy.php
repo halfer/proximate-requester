@@ -42,11 +42,13 @@ class Proxy
     /**
      * Checks the required extensions are available
      *
+     * @todo Add these deps to the composer.json file as well
+     *
      * @return $this
      */
     public function checkExtensionsAvailable()
     {
-        foreach (['sockets', 'pcntl', ] as $module)
+        foreach (['sockets', 'pcntl', 'curl,' ] as $module)
         {
             if (!extension_loaded($module))
             {

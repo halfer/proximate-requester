@@ -48,7 +48,7 @@ class Proxy
      */
     public function checkExtensionsAvailable()
     {
-        foreach (['sockets', 'pcntl', 'curl,' ] as $module)
+        foreach (['sockets', 'pcntl', 'curl', ] as $module)
         {
             if (!extension_loaded($module))
             {

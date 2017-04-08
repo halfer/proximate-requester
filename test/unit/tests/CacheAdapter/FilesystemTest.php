@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use League\Flysystem\Filesystem as FlysystemAdapter;
 use Proximate\CacheAdapter\Filesystem;
 use Cache\Adapter\Filesystem\FilesystemCachePool;
+use Cache\Adapter\Common\CacheItem;
 
 class FilesystemTest extends TestCase
 {
@@ -64,7 +65,7 @@ class FilesystemTest extends TestCase
 
         // Set up mock for cache pool
         $cacheItems = ['Item 1', 'Item 2', 'Item 3', ];
-        $cachePool = Mockery::mock(FilesystemCachePool::class);
+        $cachePool = $this->getMockedCache();
         $cachePool->
             shouldReceive('getItems')->
             with($cacheKeys)->
@@ -96,9 +97,86 @@ class FilesystemTest extends TestCase
         $this->markTestIncomplete(); // @todo Missing test
     }
 
+    /**
+     * Responses with missing metadata data
+     *
+     * @dataProvider missingMetadataKeyDataProvider
+     * @expectedException Proximate\Exception\Server
+     */
+    public function testSaveBadResponse($missingKey)
+    {
+        $response = "This is a response";
+        $metadata = [
+            'url' => 'http://example.com/page',
+            'method' => 'GET',
+            'key' => 'mykey',
+        ];
+
+        // Emulate this key not being set, so an error is thrown
+        unset($metadata[$missingKey]);
+
+        $this->getCacheAdapter()->saveResponse($response, $metadata);
+    }
+
+    public function missingMetadataKeyDataProvider()
+    {
+        return [
+            ['url'],
+            ['method'],
+            ['key'],
+        ];
+    }
+
     public function testLoadResponse()
     {
         $this->markTestIncomplete(); // @todo Missing test
+    }
+
+    public function testReadCacheItem()
+    {
+        $key = 'Key A';
+        $valueExpected = ['Cache Item A'];
+
+        // Mock the cache item
+        $cacheItem = Mockery::mock(CacheItem::class);
+        $cacheItem->
+            shouldReceive('get')->
+            once()->
+            andReturn($valueExpected);
+
+        // Mock the cache pool
+        $cachePool = $this->getMockedCache();
+        $cachePool->
+            shouldReceive('getItem')->
+            once()->
+            with($key)->
+            andReturn($cacheItem);
+
+        $cacheItemResult = $this->
+            getCacheAdapter()->
+            setCacheItemPoolInterface($cachePool)->
+            readCacheItem($key);
+        $this->assertEquals($valueExpected, $cacheItemResult);
+    }
+
+    public function testExpireCacheItem()
+    {
+        $key = 'Key B';
+
+        // Mock the cache pool
+        $cachePool = $this->getMockedCache();
+        $cachePool->
+            shouldReceive('deleteItem')->
+            once()->
+            with($key);
+
+        $this->
+            getCacheAdapter()->
+            setCacheItemPoolInterface($cachePool)->
+            expireCacheItem($key);
+
+        // Dummy test to keep PHPUnit quiet, the once() is the real test
+        $this->assertEquals(1, 1);
     }
 
     protected function getCacheAdapter()
@@ -118,5 +196,10 @@ class FilesystemTest extends TestCase
     protected function getMockedFlysystem()
     {
         return $this->flysystem;
+    }
+
+    protected function getMockedCache()
+    {
+        return Mockery::mock(FilesystemCachePool::class);
     }
 }

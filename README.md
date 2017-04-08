@@ -9,13 +9,13 @@ HTTP proxy. Its features include:
 
 * When configured as an HTTP proxy, Proximate records any plaintext HTTP request without any
 modifications being required on the client (other than changing the proxy settings).
-* Where a request is regarded as matching, the headers and response are played back from the
-proxy instead of being fetched from the real endpoint.
+* Where a request is regarded as matching a prior visit, the headers and response are played
+back from the proxy cache, instead of being re-fetched.
 * Where an HTTPS endpoint is to be recorded, a proxy cannot intercept this data in order to
-record it, so the endpoint is converted to HTTP at the client, and a special header is injected
-to tell the proxy to switch back to HTTPS for the fetch. A class is provided to do this
-transparently for all HTTP/HTTPS endpoints.
-* For applications based on Guzzle 6, a piece of middleware is offered to transparently
+record it. To handle this, the library offers a facility to convert the URL to HTTP at the
+client, and a special header is injected to tell the proxy to switch back to HTTPS for the
+fetch. The class handles this transparently for all endpoints regardless of protocol.
+* For applications based on Guzzle 6, a middleware class is offered to transparently
 convert HTTPS endpoints into interceptable ones before they hit the proxy. To show how this
 works, integration classes for a third-party [web scraping robot](https://github.com/spatie/crawler)
 are included.
@@ -32,10 +32,10 @@ written and tested on real, but non-live, websites. Using this library, one can 
 start URL and a URL regex to match, and fetch matching pages via the proxy/recorder.
 
 The proxy component originally used WireMock, a Java-based recorder. This comes with an
-HTTP API to query the cache too. However, I soon discovered the unavoidable problem of recording
-HTTPS endpoints, which would have required more Java-fu than was available, to change its
-behaviour on secure sites. Given that there were other things I did not like about this system,
-I decided to drop it in favour of a PHP approach.
+HTTP API to query the cache too. However, I soon discovered that the customisations required
+for HTTPS handling would have required more Java-fu and time than was available. Given that there
+were other things I did not like about this system, I decided to drop it in favour of a custom,
+PHP-based approach.
 
 There is very little provision in the PHP ecosystem for HTTP proxies, though it looks like
 [something is coming from ReactPHP](https://github.com/clue/php-http-proxy-react/issues/4). In
@@ -63,6 +63,7 @@ to specify when items should automatically expire.
 supports column sorting (the file cache does not, but the database one would do).
 * The fetcher currently uses raw cURL, but this will probably be swapped to
 [a wrapper library](https://github.com/php-mod/curl) instead, to improve testability.
+* Support for older versions of Guzzle.
 
 Related packages
 ---

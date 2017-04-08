@@ -39,13 +39,13 @@ class Proxy
     }
 
     /**
-     * Initialises the server listening
+     * Checks the required extensions are available
      *
      * @return $this
      */
-    public function checkSocketsAvailable()
+    public function checkExtensionsAvailable()
     {
-        foreach (['sockets', ] as $module)
+        foreach (['sockets', 'pcntl', ] as $module)
         {
             if (!extension_loaded($module))
             {

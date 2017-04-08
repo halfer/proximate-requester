@@ -57,7 +57,7 @@ class FileProxy
         $this->proxy = new Proxy($client, $cachePool, $cacheAdapter);
         $this->
             getProxy()->
-            checkSocketsAvailable()->
+            checkExtensionsAvailable()->
             addLogger($logger)->
             handleTerminationSignals();
 

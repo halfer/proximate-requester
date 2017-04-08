@@ -1,10 +1,10 @@
-Proximate Requester
+Proximate/Requester
 ===
 
 Introduction
 ---
 
-Proximate Requester is a PHP library to provide the building blocks for a record/playback
+Proximate/Requester is a PHP library to provide the building blocks for a record/playback
 HTTP proxy. Its features include:
 
 * When configured as an HTTP proxy, Proximate records any plaintext HTTP request without any
@@ -27,7 +27,20 @@ could be used. Presently just a
 Rationale
 ---
 
-(@todo Why am I writing this? What did I consider instead?)
+This project was written as a test system for a web scraping system, so that scrapers can be
+written and tested on real, but non-live, websites. Using this library, one can provide a
+start URL and a URL regex to match, and fetch matching pages via the proxy/recorder.
+
+The proxy component originally used WireMock, a Java-based recorder. This comes with an
+HTTP API to query the cache too. However, I soon discovered the unavoidable problem of recording
+HTTPS endpoints, which would have required more Java-fu than was available, to change its
+behaviour on secure sites. Given that there were other things I did not like about this system,
+I decided to drop it in favour of a PHP approach.
+
+There is very little provision in the PHP ecosystem for HTTP proxies, though it looks like
+[something is coming from ReactPHP](https://github.com/clue/php-http-proxy-react/issues/4). In
+the meantime, I wrote my own, but I'd be very happy to switch to a better library that provides
+the necessary internal hooks.
 
 Status
 ---
@@ -54,4 +67,13 @@ supports column sorting (the file cache does not, but the database one would do)
 Related packages
 ---
 
-(@todo What other packages do I plan to release?)
+Requester is designed to sit alongside other packages I have planned. These are all implemented
+as Docker applications, so that any part can be swapped out as required:
+
+* Proximate/Proxy - an implementation of the proxy class, using the file cache, sitting on a
+Docker host volume. This is pretty much written already.
+* Proximate/API - an HTTP API that uses the Requester library to offer a queryable interface
+to the proxy's cache contents. Items can be retrieved in paginated form, individually, or deleted.
+New URLs can be added to a crawl queue too.
+* Proximate/App - a simple web app that talks to the API to request scrapes, to browse and delete
+the proxy contents.

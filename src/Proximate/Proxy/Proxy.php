@@ -174,7 +174,7 @@ class Proxy
         {
             // If it does then read it here
             $cacheData = $cacheItem->get();
-            $targetSiteData = $this->getCacheAdapter()->loadResponse($cacheData);
+            $targetSiteData = $this->getCacheAdapter()->convertCacheToResponse($cacheData);
             $this->log(
                 sprintf(
                     "Retrieved page of %d bytes from cache against key %s",
@@ -257,7 +257,7 @@ class Proxy
         );
 
         // Convert the response to whatever the cache format is
-        $cacheData = $this->getCacheAdapter()->saveResponse(
+        $cacheData = $this->getCacheAdapter()->convertResponseToCache(
             $targetSiteData,
             $metadata
         );

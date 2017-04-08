@@ -92,11 +92,11 @@ class FilesystemTest extends TestCase
         return [1, 2, 3, 4, 5, 6, 7, ];
     }
 
-    public function testSaveResponse()
+    public function testConvertResponseToCache()
     {
         $response = "This is a response";
         $metadata = $this->getDemoMetadata();
-        $converted = $this->getCacheAdapter()->saveResponse($response, $metadata);
+        $converted = $this->getCacheAdapter()->convertResponseToCache($response, $metadata);
 
         $expected = array_merge($metadata, ['response' => $response]);
         $this->assertEquals($expected, $converted);
@@ -108,7 +108,7 @@ class FilesystemTest extends TestCase
      * @dataProvider missingMetadataKeyDataProvider
      * @expectedException Proximate\Exception\Server
      */
-    public function testSaveBadResponse($missingKey)
+    public function testBadConvertResponseToCache($missingKey)
     {
         $response = "This is a response";
         $metadata = $this->getDemoMetadata();
@@ -116,7 +116,7 @@ class FilesystemTest extends TestCase
         // Emulate this key not being set, so an error is thrown
         unset($metadata[$missingKey]);
 
-        $this->getCacheAdapter()->saveResponse($response, $metadata);
+        $this->getCacheAdapter()->convertResponseToCache($response, $metadata);
     }
 
     protected function getDemoMetadata()
@@ -137,7 +137,7 @@ class FilesystemTest extends TestCase
         ];
     }
 
-    public function testLoadResponse()
+    public function testConvertCacheToResponse()
     {
         $response = "This is a response";
         $metadata = $this->getDemoMetadata();
@@ -146,7 +146,7 @@ class FilesystemTest extends TestCase
             ['response' => $response, ]
         );
 
-        $converted = $this->getCacheAdapter()->loadResponse($cachedData);
+        $converted = $this->getCacheAdapter()->convertCacheToResponse($cachedData);
         $this->assertEquals($response, $converted);
     }
 

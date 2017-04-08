@@ -56,14 +56,12 @@ class Filesystem extends BaseAdapter
      *
      * Note we do not do any serialisation here, the cache will do that.
      *
-     * @todo Rename this, it does not do any saving! How about convertResponseToCache?
-     *
      * @param string $response
      * @param array $metadata
      * @return array
      * @throws Server
      */
-    public function saveResponse($response, array $metadata)
+    public function convertResponseToCache($response, array $metadata)
     {
         foreach (['url', 'method', 'key'] as $key)
         {
@@ -90,12 +88,10 @@ class Filesystem extends BaseAdapter
      * strongly type the parameter here, but since PHP doesn't like it when a method
      * signature disagrees with the parent implementation, I will leave it un-hinted.
      *
-     * @todo Rename this, it does not do any loading! How about convertCacheToResponse?
-     *
      * @param array $cachedData
      * @return string
      */
-    public function loadResponse($cachedData)
+    public function convertCacheToResponse($cachedData)
     {
         if (!isset($cachedData['response']))
         {

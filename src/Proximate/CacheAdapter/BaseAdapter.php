@@ -26,24 +26,24 @@ abstract class BaseAdapter
     abstract protected function getCacheKeys();
 
     /**
-     * The simplest possible response saver, just saves it as-is with no metadata
+     * The simplest possible conversion before caching: just passes through with no changes
      *
      * @param string $response
      * @param array $metadata Any metadata relating to this response
      * @return string
      */
-    public function saveResponse($response, array $metadata)
+    public function convertResponseToCache($response, array $metadata)
     {
         return $response;
     }
 
     /**
-     * The simplest possible response loader, just loads it as-is
+     * The simplest possible conversion upon retrieval, just passes through with no changes
      *
      * @param string $cachedData
      * @return string
      */
-    public function loadResponse($cachedData)
+    public function convertCacheToResponse($cachedData)
     {
         return $cachedData;
     }

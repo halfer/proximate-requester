@@ -11,21 +11,21 @@ use Proximate\CacheAdapter\BaseAdapter;
 
 class BaseAdapterTest extends TestCase
 {
-    public function testSaveResponse()
+    public function testConvertResponseToCache()
     {
         $response = "This is a response";
         $this->assertEquals(
             $response,
-            $this->getCacheAdapter()->saveResponse($response, [])
+            $this->getCacheAdapter()->convertResponseToCache($response, [])
         );
     }
 
-    public function testLoadResponse()
+    public function testConvertCacheToResponse()
     {
         $cachedData = "This is a cached value";
         $this->assertEquals(
             $cachedData,
-            $this->getCacheAdapter()->loadResponse($cachedData)
+            $this->getCacheAdapter()->convertCacheToResponse($cachedData)
         );
     }
 

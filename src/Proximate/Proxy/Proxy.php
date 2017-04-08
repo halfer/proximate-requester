@@ -259,10 +259,11 @@ class Proxy
         $item->set($cacheData);
         $this->getCachePool()->save($item);
 
+        // This logs the size of the page rather than the whole meta block
         $this->log(
             sprintf(
                 "Fetched page of %d bytes and saving against cache key `%s`",
-                strlen($cacheData),
+                strlen($targetSiteData),
                 $key
             )
         );

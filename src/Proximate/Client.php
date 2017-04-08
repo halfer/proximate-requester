@@ -129,8 +129,6 @@ class Client
     /**
      * Gets an array of curl options
      *
-     * @todo The method section could be separated out as a trait
-     *
      * @return array
      */
     protected function getCurlOptsCustom($method)

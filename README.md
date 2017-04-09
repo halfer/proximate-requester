@@ -95,10 +95,11 @@ There is no license yet, but it will be F/OSS friendly.
 Planned future enhancements
 ---
 
+* Functional tests to check the proxy serves the correct results in a variety of situations.
 * Injectable classes to determine what features in a request make it unique.
 * The fetcher currently uses raw cURL, but this will probably be swapped to
 [a wrapper library](https://github.com/php-mod/curl) instead, to improve testability.
-* Support for older versions of Guzzle.
+* Support for releases of Guzzle older than version 6.
 
 Possible future enhancements
 ---

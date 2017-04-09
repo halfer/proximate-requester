@@ -23,6 +23,7 @@ are included.
 which means that [any compatible cache provider](https://github.com/php-cache/cache/tree/master/src/Adapter)
 could be used. Presently just a
 [file cache](https://github.com/php-cache/cache/tree/master/src/Adapter/Filesystem) is implemented.
+* Logging is based on the [PSR-3 standard](http://www.php-fig.org/psr/psr-3/).
 
 Rationale
 ---
@@ -38,9 +39,46 @@ were other things I did not like about this system, I decided to drop it in favo
 PHP-based approach.
 
 There is very little provision in the PHP ecosystem for HTTP proxies, though it looks like
-[something is coming from ReactPHP](https://github.com/clue/php-http-proxy-react/issues/4). In
+[something based on ReactPHP is coming](https://github.com/clue/php-http-proxy-react/issues/4). In
 the meantime, I wrote my own, but I'd be very happy to switch to a better library that provides
 the necessary internal hooks.
+
+Server usage
+---
+
+There is a proxy server script in `console/proxy-server.php`, which starts up on a local port.
+In practice, you'll want to use this approach in your own code, so you can configure it correctly:
+
+    /**
+     * Listens to localhost on port 8080
+     * Uses a file-based cache
+     * Stores cache data in /var/proximate/mycache/*
+     */
+    $proxier = new FileProxy('localhost:8080', '/var/proximate');
+    $proxier->
+        setup('mycache')->
+        getProxy()->
+        listenLoop();
+
+To create more complex proxy devices, look at `src/Proximate/Proxy/FileProxy` to see how the
+various classes are set up. You will need:
+
+* A `Socket\Raw\Socket` for listening
+* A PSR-6 compatible cache adapter, e.g. `Cache\Adapter\Filesystem\FilesystemCachePool`
+* A child of `Proximate\CacheAdapter\BaseAdapter` for Proximate-specific cache operations
+* An instance (or a child of) `Proximate\Proxy` to do the listening
+
+Optionally you can add:
+
+* A PSR-3 compatible logger
+
+Client usage
+---
+
+See the examples in `console/simple-fetch.php` and `console/recursive-fetch.php`. The effect
+of a local proxy is apparent with the recursive fetcher: on a slow connection where ~ 20 items
+are fetched in as many seconds, running it a second time usually results in a run time of
+around 0.3 sec!
 
 Status
 ---

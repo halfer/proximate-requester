@@ -92,6 +92,14 @@ There is no stable release as yet.
 
 There is no license yet, but it will be F/OSS friendly.
 
+Planned future enhancements
+---
+
+* Injectable classes to determine what features in a request make it unique.
+* The fetcher currently uses raw cURL, but this will probably be swapped to
+[a wrapper library](https://github.com/php-mod/curl) instead, to improve testability.
+* Support for older versions of Guzzle.
+
 Possible future enhancements
 ---
 
@@ -100,9 +108,6 @@ to specify when items should automatically expire.
 * Add a database cache adapters, e.g. for the Doctrine ORM.
 * Allow cache adapters to declare their functionality, e.g. whether the pagination device
 supports column sorting (the file cache does not, but the database one would do).
-* The fetcher currently uses raw cURL, but this will probably be swapped to
-[a wrapper library](https://github.com/php-mod/curl) instead, to improve testability.
-* Support for older versions of Guzzle.
 
 Related packages
 ---

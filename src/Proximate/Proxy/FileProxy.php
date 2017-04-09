@@ -34,6 +34,8 @@ class FileProxy
     /**
      * Call this to do more heavy-duty setup than we can do in the ctor
      *
+     * @todo Can this code be split into more methods to make swapping out parts easier?
+     *
      * @param string $folder The sub-folder name in which cache items are stored
      * @return self
      */
@@ -52,15 +54,10 @@ class FileProxy
         $cacheAdapter = new FilesystemCacheAdapter($filesystem);
         $cacheAdapter->setCacheFolder($folder);
 
-        // Here is the optional logger to inject
-        $logger = new Logger('stdout');
-        $logger->pushHandler(new ErrorLogHandler());
-
         $this->proxy = new Proxy($server, $cachePool, $cacheAdapter);
         $this->
             getProxy()->
             checkExtensionsAvailable()->
-            addLogger($logger)->
             handleTerminationSignals();
 
         return $this;
@@ -74,5 +71,15 @@ class FileProxy
     public function getProxy()
     {
         return $this->proxy;
+    }
+
+    public function addStdoutLogger()
+    {
+        $logger = new Logger('stdout');
+        $logger->pushHandler(new ErrorLogHandler());
+
+        $this->getProxy()->addLogger($logger);
+
+        return $this;
     }
 }

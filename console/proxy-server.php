@@ -14,6 +14,7 @@ try
     $proxier = new FileProxy('localhost:9001', $rootPath);
     $proxier->
         setup()->
+        addStdoutLogger()->
         getProxy()->
         listenLoop();
 }

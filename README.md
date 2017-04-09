@@ -57,6 +57,7 @@ In practice, you'll want to use this approach in your own code, so you can confi
     $proxier = new FileProxy('localhost:8080', '/var/proximate');
     $proxier->
         setup('mycache')->
+        addStdoutLogger()->
         getProxy()->
         listenLoop();
 

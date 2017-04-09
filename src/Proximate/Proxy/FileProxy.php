@@ -41,7 +41,7 @@ class FileProxy
     {
         // Here is the basis of the listening system
         $factory = new SocketFactory();
-        $client = $factory->createServer($this->server);
+        $server = $factory->createServer($this->server);
 
         // This sets up the cache storage system
         $filesystemAdapter = new LocalFileAdapter($this->rootPath);
@@ -56,7 +56,7 @@ class FileProxy
         $logger = new Logger('stdout');
         $logger->pushHandler(new ErrorLogHandler());
 
-        $this->proxy = new Proxy($client, $cachePool, $cacheAdapter);
+        $this->proxy = new Proxy($server, $cachePool, $cacheAdapter);
         $this->
             getProxy()->
             checkExtensionsAvailable()->

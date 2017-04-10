@@ -21,44 +21,95 @@ use Proximate\Proxy\Proxy;
 
 class FileProxy
 {
-    protected $server;
+    protected $serverAddress;
     protected $rootPath;
+    protected $socketServer;
+    protected $cachePool;
+    protected $cacheAdapter;
     protected $proxy;
 
-    public function __construct($server, $rootPath)
+    public function __construct($serverAddress, $rootPath)
     {
-        $this->server = $server;
+        $this->serverAddress = $serverAddress;
         $this->rootPath = $rootPath;
     }
 
     /**
-     * Call this to do more heavy-duty setup than we can do in the ctor
+     * Sets up a completely vanilla proxy with all the defaults
      *
-     * @todo Can this code be split into more methods to make swapping out parts easier?
+     * To modify the behaviour of any of these methods, they can be over-ridden in a child
+     * class, or a caller can just call the methods it wishes (e.g. to remove the logger).
      *
      * @param string $folder The sub-folder name in which cache items are stored
      * @return self
      */
-    public function setup($folder = 'cache')
+    public function initSimpleSystem($folder = 'cache')
     {
-        // Here is the basis of the listening system
-        $factory = new SocketFactory();
-        $server = $factory->createServer($this->server);
+        return $this->
+            initServer()->
+            initFileCache($folder)->
+            initProxy()->
+            addStdoutLogger();
+    }
 
+    /**
+     * Creates a listening socket
+     *
+     * @return self
+     */
+    public function initServer()
+    {
+        $factory = new SocketFactory();
+        $this->socketServer = $factory->createServer($this->serverAddress);
+
+        return $this;
+    }
+
+    /**
+     * Initialises the file cache
+     *
+     * @param string $folder The sub-folder name in which cache items are stored
+     * @return self
+     */
+    public function initFileCache($folder = 'cache')
+    {
         // This sets up the cache storage system
         $filesystemAdapter = new LocalFileAdapter($this->rootPath);
         $filesystem = new Filesystem($filesystemAdapter);
-        $cachePool = new FilesystemCachePool($filesystem, $folder);
+        $this->cachePool = new FilesystemCachePool($filesystem, $folder);
 
         // Here is a dependency to perform additional ops on the cache
-        $cacheAdapter = new FilesystemCacheAdapter($filesystem);
-        $cacheAdapter->setCacheFolder($folder);
+        $this->cacheAdapter = new FilesystemCacheAdapter($filesystem);
+        $this->cacheAdapter->setCacheFolder($folder);
 
-        $this->proxy = new Proxy($server, $cachePool, $cacheAdapter);
+        return $this;
+    }
+
+    /**
+     * Initialises the proxy system
+     *
+     * @return self
+     */
+    public function initProxy()
+    {
+        // @todo Bomb out if cachePool or cacheAdapter are not set
+        // @todo Maybe use getters for all properties, and put the exceptions in there
+
+        $this->proxy = new Proxy($this->socketServer, $this->cachePool, $this->cacheAdapter);
         $this->
             getProxy()->
             checkExtensionsAvailable()->
             handleTerminationSignals();
+
+        return $this;
+    }
+
+    public function addStdoutLogger()
+    {
+        $logger = new Logger('stdout');
+        $logger->pushHandler(new ErrorLogHandler());
+
+        $this->getProxy()->addLogger($logger);
 
         return $this;
     }
@@ -71,15 +122,5 @@ class FileProxy
     public function getProxy()
     {
         return $this->proxy;
-    }
-
-    public function addStdoutLogger()
-    {
-        $logger = new Logger('stdout');
-        $logger->pushHandler(new ErrorLogHandler());
-
-        $this->getProxy()->addLogger($logger);
-
-        return $this;
     }
 }

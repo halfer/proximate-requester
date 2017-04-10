@@ -13,8 +13,7 @@ try
 {
     $proxier = new FileProxy('localhost:9001', $rootPath);
     $proxier->
-        setup()->
-        addStdoutLogger()->
+        initSimpleSystem()->
         getProxy()->
         listenLoop();
 }

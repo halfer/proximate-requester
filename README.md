@@ -24,6 +24,8 @@ which means that [any compatible cache provider](https://github.com/php-cache/ca
 could be used. Presently just a
 [file cache](https://github.com/php-cache/cache/tree/master/src/Adapter/Filesystem) is implemented.
 * Logging is based on the [PSR-3 standard](http://www.php-fig.org/psr/psr-3/).
+* Customisable request matching, which determines whether any two requests are to be treated
+as the same for caching purposes.
 
 Rationale
 ---
@@ -65,8 +67,20 @@ various classes are set up. You will need:
 
 * A `Socket\Raw\Socket` for listening
 * A PSR-6 compatible cache adapter, e.g. `Cache\Adapter\Filesystem\FilesystemCachePool`
-* A child of `Proximate\CacheAdapter\BaseAdapter` for Proximate-specific cache operations
+* A child of `Proximate\CacheAdapter\BaseAdapter` for Proximate-specific cache operations. This
+includes creating cache keys (hashes), fetching pages of cache keys, fetching pages of cache
+entries, converting between raw responses and cache entries.
 * An instance (or a child of) `Proximate\Proxy` to do the listening
+
+Customising request matching
+---
+
+When examining a request coming into the proxy, the proxy has to decide if it has seen it
+before. To do this, it must convert a request (the method line plus the headers) into a hash,
+which is then used as a key to load and save items in the cache.
+
+There is a default hashing algorithm in `BaseAdapter`, but this can be overrided in a descendent
+class. The default just takes the method and the real URL into account.
 
 Optionally you can add:
 
@@ -96,7 +110,7 @@ Planned future enhancements
 ---
 
 * Functional tests to check the proxy serves the correct results in a variety of situations.
-* Injectable classes to determine what features in a request make it unique.
+* When hashing a POST request, POST variables should be taken into account.
 * The fetcher currently uses raw cURL, but this will probably be swapped to
 [a wrapper library](https://github.com/php-mod/curl) instead, to improve testability.
 * Support for releases of Guzzle older than version 6.
@@ -109,6 +123,9 @@ to specify when items should automatically expire.
 * Add a database cache adapters, e.g. for the Doctrine ORM.
 * Allow cache adapters to declare their functionality, e.g. whether the pagination device
 supports column sorting (the file cache does not, but the database one would do).
+* A compound builder system to create a custom hash device, e.g. one could specify hashes
+are built using method + realUrl + post vars + query string, perhaps represented as an array
+of objects, or using a fluent interface within a single object.
 
 Related packages
 ---

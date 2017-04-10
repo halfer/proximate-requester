@@ -23,9 +23,9 @@ is integrated in a related project (see "Related packages" below).
 which means that [any compatible cache provider](https://github.com/php-cache/cache/tree/master/src/Adapter)
 could be used. Presently just a
 [file cache](https://github.com/php-cache/cache/tree/master/src/Adapter/Filesystem) is implemented.
-* Logging is based on the [PSR-3 standard](http://www.php-fig.org/psr/psr-3/).
 * Customisable request matching, which determines whether any two requests are to be treated
 as the same for caching purposes.
+* Logging is based on the [PSR-3 standard](http://www.php-fig.org/psr/psr-3/).
 
 Rationale
 ---
@@ -72,6 +72,10 @@ includes creating cache keys (hashes), fetching pages of cache keys, fetching pa
 entries, converting between raw responses and cache entries.
 * An instance (or a child of) `Proximate\Proxy` to do the listening
 
+Optionally you can add:
+
+* A PSR-3 compatible logger
+
 Customising request matching
 ---
 
@@ -81,10 +85,6 @@ which is then used as a key to load and save items in the cache.
 
 There is a default hashing algorithm in `BaseAdapter`, but this can be overrided in a descendent
 class. The default just takes the method and the real URL into account.
-
-Optionally you can add:
-
-* A PSR-3 compatible logger
 
 Client usage
 ---

@@ -4,7 +4,7 @@
  * A trait for common cURL methods
  */
 
-namespace Proximate;
+namespace Proximate\Feature;
 
 trait Curl
 {

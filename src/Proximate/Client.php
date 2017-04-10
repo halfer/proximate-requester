@@ -12,7 +12,7 @@ use Proximate\Exception\Server as ServerException;
 
 class Client
 {
-    use Curl;
+    use \Proximate\Feature\Curl;
 
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
 

@@ -19,7 +19,7 @@ use Monolog\Logger;
 class Proxy
 {
     use \Proximate\Logger;
-    use \Proximate\Curl;
+    use \Proximate\Feature\Curl;
 
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
 

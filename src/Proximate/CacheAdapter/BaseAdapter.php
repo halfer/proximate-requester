@@ -105,6 +105,19 @@ abstract class BaseAdapter
     }
 
     /**
+     * Creates a cache key for page metadata
+     *
+     * This can easily be overridden in the child class for more complex matching policies.
+     *
+     * @param string $url
+     * @param string $method
+     */
+    public function createCacheKey($url, $method)
+    {
+        return sha1($method . $url);
+    }
+
+    /**
      * Fluent setter to set the cache pool
      *
      * (This could go in a ctor, but it's not needed for everything, so I'd rather use a getter

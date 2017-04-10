@@ -168,7 +168,7 @@ class Proxy
         }
 
         // Check if cache key exists
-        $key = $this->createCacheKey($url, $method);
+        $key = $this->getCacheAdapter()->createCacheKey($url, $method);
         $cacheItem = $this->getCachePool()->getItem($key);
 
         if ($cacheItem->isHit())
@@ -404,19 +404,6 @@ class Proxy
     protected function assembleOutput($headers, $body)
     {
         return $headers . "\r\n" . $body;
-    }
-
-    /**
-     * Creates a cache key for page metadata
-     *
-     * Should we consider query strings or POST parameters?
-     *
-     * @param string $url
-     * @param string $method
-     */
-    protected function createCacheKey($url, $method)
-    {
-        return sha1($method . $url);
     }
 
     /**

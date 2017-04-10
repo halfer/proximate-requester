@@ -17,8 +17,8 @@ client, and a special header is injected to tell the proxy to switch back to HTT
 fetch. The class handles this transparently for all endpoints regardless of protocol.
 * For applications based on Guzzle 6, a middleware class is offered to transparently
 convert HTTPS endpoints into interceptable ones before they hit the proxy. To show how this
-works, integration classes for a third-party [web scraping robot](https://github.com/spatie/crawler)
-are included.
+works, a third-party [web scraping robot](https://github.com/spatie/crawler)
+is integrated in a related project (see "Related packages" below).
 * The storage system is based on the [PSR-6 caching standard](http://www.php-fig.org/psr/psr-6/),
 which means that [any compatible cache provider](https://github.com/php-cache/cache/tree/master/src/Adapter)
 could be used. Presently just a
@@ -75,7 +75,8 @@ Optionally you can add:
 Client usage
 ---
 
-See the examples in `console/simple-fetch.php` and `console/recursive-fetch.php`. The effect
+See the example in `console/simple-fetch.php` in this repo, the `console/recursive-fetch.php`
+in [Proximate/Crawler](https://github.com/halfer/proximate-crawler). The effect
 of a local proxy is apparent with the recursive fetcher: on a slow connection where ~ 20 items
 are fetched in as many seconds, running it a second time usually results in a run time of
 around 0.3 sec!
@@ -112,11 +113,13 @@ supports column sorting (the file cache does not, but the database one would do)
 Related packages
 ---
 
-Requester is designed to sit alongside other packages I have planned. These are all implemented
-as Docker applications, so that any part can be swapped out as required:
+Requester is designed to sit alongside other packages I have written (or are planned). These are
+all implemented as Docker applications, so that any part can be swapped out as required:
 
 * Proximate/Proxy - an implementation of the proxy class, using the file cache, sitting on a
 Docker host volume. This is pretty much written already.
+* [Proximate/Crawler](https://github.com/halfer/proximate-crawler) - some glue classes that
+connect Spatie\Crawler to a Proximate proxy instance.
 * Proximate/API - an HTTP API that uses the Requester library to offer a queryable interface
 to the proxy's cache contents. Items can be retrieved in paginated form, individually, or deleted.
 New URLs can be added to a crawl queue too.

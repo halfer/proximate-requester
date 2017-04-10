@@ -19,6 +19,8 @@ use Monolog\Handler\ErrorLogHandler;
 
 use Proximate\Proxy\Proxy;
 
+use Proximate\Exception\Init as InitException;
+
 class FileProxy
 {
     protected $serverAddress;
@@ -38,7 +40,8 @@ class FileProxy
      * Sets up a completely vanilla proxy with all the defaults
      *
      * To modify the behaviour of any of these methods, they can be over-ridden in a child
-     * class, or a caller can just call the methods it wishes (e.g. to remove the logger).
+     * class, or a caller can just directly call the methods it wishes (e.g. to remove the
+     * logger).
      *
      * @param string $folder The sub-folder name in which cache items are stored
      * @return self
@@ -92,10 +95,11 @@ class FileProxy
      */
     public function initProxy()
     {
-        // @todo Bomb out if cachePool or cacheAdapter are not set
-        // @todo Maybe use getters for all properties, and put the exceptions in there
-
-        $this->proxy = new Proxy($this->socketServer, $this->cachePool, $this->cacheAdapter);
+        $this->proxy = new Proxy(
+            $this->getSocketServer(),
+            $this->getCachePool(),
+            $this->getCacheAdapter()
+        );
         $this->
             getProxy()->
             checkExtensionsAvailable()->
@@ -104,6 +108,11 @@ class FileProxy
         return $this;
     }
 
+    /**
+     * Adds a file/stdout logger to an existing proxy instance
+     *
+     * @return self
+     */
     public function addStdoutLogger()
     {
         $logger = new Logger('stdout');
@@ -114,6 +123,36 @@ class FileProxy
         return $this;
     }
 
+    public function getSocketServer()
+    {
+        if (!$this->socketServer)
+        {
+            throw new InitException("Socket server not initialised");
+        }
+
+        return $this->socketServer;
+    }
+
+    public function getCachePool()
+    {
+        if (!$this->cachePool)
+        {
+            throw new InitException("Cache pool not initialised");
+        }
+
+        return $this->cachePool;
+    }
+
+    public function getCacheAdapter()
+    {
+        if (!$this->cacheAdapter)
+        {
+            throw new InitException("Cache adapter not initialised");
+        }
+
+        return $this->cacheAdapter;
+    }
+
     /**
      * Gets the internal proxy instance
      *
@@ -121,6 +160,11 @@ class FileProxy
      */
     public function getProxy()
     {
+        if (!$this->proxy)
+        {
+            throw new InitException("Proxy not initialised");
+        }
+
         return $this->proxy;
     }
 }

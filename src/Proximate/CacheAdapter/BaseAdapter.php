@@ -110,15 +110,18 @@ abstract class BaseAdapter
      * Creates a cache key for page metadata
      *
      * This can easily be overridden in the child class for more complex matching policies.
+     * Note that encrypted connections will be presented as a plaintext proxy request, as
+     * a result of the request modification done to make it recordable. Hence $realUrl is
+     * used to contain the URL before the CONNECT is modified to a GET.
      *
      * @param string $request
+     * @param string $realUrl Usually will match the request header, except for HTTPS URLs
      */
-    public function createCacheKey($request)
+    public function createCacheKey($request, $realUrl)
     {
-        $url = $this->getTargetUrlFromProxyRequest($request);
         $method = $this->getMethodFromProxyRequest($request);
 
-        return sha1($method . $url);
+        return sha1($method . $realUrl);
     }
 
     /**

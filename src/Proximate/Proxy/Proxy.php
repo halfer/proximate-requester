@@ -169,7 +169,7 @@ class Proxy
         }
 
         // Check if cache key exists
-        $key = $this->getCacheAdapter()->createCacheKey($request);
+        $key = $this->getCacheAdapter()->createCacheKey($request, $url);
         $cacheItem = $this->getCachePool()->getItem($key);
 
         if ($cacheItem->isHit())

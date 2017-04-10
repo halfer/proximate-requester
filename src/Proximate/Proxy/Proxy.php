@@ -20,6 +20,7 @@ class Proxy
 {
     use \Proximate\Logger;
     use \Proximate\Feature\Curl;
+    use \Proximate\Feature\RequestParser;
     use \Proximate\Feature\ResponseParser;
 
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
@@ -140,9 +141,9 @@ class Proxy
      *
      * @todo Can the 500 error be more explicit for the client's benefit?
      *
-     * @param string $input
+     * @param string $request
      */
-    protected function handleHttpsConnect($input)
+    protected function handleHttpsConnect($request)
     {
         $this->log("HTTPS proxying not supported", Logger::ERROR);
 
@@ -152,23 +153,23 @@ class Proxy
     /**
      * We've received an HTTP connection
      *
-     * @param string $input
+     * @param string $request
      */
-    protected function handleHttpConnect($input)
+    protected function handleHttpConnect($request)
     {
-        $url = $this->getTargetUrlFromProxyRequest($input);
-        $method = $this->getMethodFromProxyRequest($input);
+        $url = $this->getTargetUrlFromProxyRequest($request);
+        $method = $this->getMethodFromProxyRequest($request);
         $this->log("URL is $url, method is $method");
 
         // Swap to the real URL if it is provided
-        if ($realUrl = $this->checkRealUrlHeader($input))
+        if ($realUrl = $this->checkRealUrlHeader($request))
         {
             $url = $realUrl;
             $this->log("HTTPS URL detected passed in header: $url");
         }
 
         // Check if cache key exists
-        $key = $this->getCacheAdapter()->createCacheKey($url, $method);
+        $key = $this->getCacheAdapter()->createCacheKey($request);
         $cacheItem = $this->getCachePool()->getItem($key);
 
         if ($cacheItem->isHit())
@@ -339,45 +340,6 @@ class Proxy
     protected function getRequestHeaders()
     {
         return [];
-    }
-
-    /**
-     * Parses the input to get the HTTP method
-     *
-     * @param string $input
-     * @return string
-     */
-    protected function getMethodFromProxyRequest($input)
-    {
-        return $this->parseProxyRequest($input, 1);
-    }
-
-    /**
-     * Parses the input to get the URL in the proxy fetch command
-     *
-     * e.g.
-     *
-     * GET http://ilovephp.jondh.me.uk/en/tutorial/make-your-own-blog HTTP/1.1
-     *
-     * results in
-     *
-     * http://ilovephp.jondh.me.uk/en/tutorial/make-your-own-blog
-     *
-     * @param string $input
-     * @return string
-     */
-    protected function getTargetUrlFromProxyRequest($input)
-    {
-        return $this->parseProxyRequest($input, 2);
-    }
-
-    protected function parseProxyRequest($input, $item)
-    {
-        $request = null;
-        preg_match("'^([^\s]+)\s([^\s]+)\s([^\r\n]+)'ims", $input, $request);
-        $element = $request[$item];
-
-        return $element;
     }
 
     /**

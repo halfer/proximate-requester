@@ -12,6 +12,8 @@ use Proximate\Exception\Init as InitException;
 
 abstract class BaseAdapter
 {
+    use \Proximate\Feature\RequestParser;
+
     protected $metadata = [];
     protected $cachePool;
 
@@ -109,11 +111,13 @@ abstract class BaseAdapter
      *
      * This can easily be overridden in the child class for more complex matching policies.
      *
-     * @param string $url
-     * @param string $method
+     * @param string $request
      */
-    public function createCacheKey($url, $method)
+    public function createCacheKey($request)
     {
+        $url = $this->getTargetUrlFromProxyRequest($request);
+        $method = $this->getMethodFromProxyRequest($request);
+
         return sha1($method . $url);
     }
 

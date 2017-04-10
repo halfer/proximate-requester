@@ -20,6 +20,7 @@ class Proxy
 {
     use \Proximate\Logger;
     use \Proximate\Feature\Curl;
+    use \Proximate\Feature\ResponseParser;
 
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
 
@@ -398,57 +399,6 @@ class Proxy
         $url = $ok ? $matches[1] : null;
 
         return $url;
-    }
-
-    protected function getHeaders($output)
-    {
-        $sections = explode("\r\n\r\n", $output, 2);
-        $headers = explode("\r\n", $sections[0]);
-
-        return $headers;
-    }
-
-    /**
-     * Gets the body section from the output
-     *
-     * @todo This will fail in the case of timeout, fix this
-     *
-     * @param string $output
-     * @return string
-     */
-    protected function getBody($output)
-    {
-        $sections = explode("\r\n\r\n", $output, 2);
-        $body = $sections[1];
-
-        return $body;
-    }
-
-    protected function implodeHeaders(array $headers) {
-        return implode(
-            "\r\n",
-            $headers
-        ) .
-        "\r\n";
-    }
-
-    /**
-     * Removes headers that will bork when received
-     *
-     * Cache-Control makes no difference if removed.
-     *
-     * Aha, Transfer-Encoding: chunked breaks a wget fetch (presumably because now it is no longer
-     * chunked)
-     *
-     * @todo Worth adding Connection: Keep-Alive?
-     *
-     * @param array $headers
-     */
-    protected function filterHeaders(array $headers)
-    {
-        return array_filter($headers, function($element) {
-            return strpos($element, 'Transfer-Encoding') !== 0;
-        });
     }
 
     protected function assembleOutput($headers, $body)

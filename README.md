@@ -89,7 +89,7 @@ class. The default just takes the method and the real URL into account.
 Client usage
 ---
 
-See the example in `console/simple-fetch.php` in this repo, the `console/recursive-fetch.php`
+See the example in `console/simple-fetch.php` in this repo, and the `console/recursive-fetch.php`
 in [Proximate/Crawler](https://github.com/halfer/proximate-crawler). The effect
 of a local proxy is apparent with the recursive fetcher: on a slow connection where ~ 20 items
 are fetched in as many seconds, running it a second time usually results in a run time of

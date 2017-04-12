@@ -110,11 +110,20 @@ class Client
         $this->responseBody = null;
         $this->responseHeaders = null;
 
+        // Choose a target URL
+        $proxy = true;
+        $url = $this->getUrl();
+        if ($method == 'SHUTDOWN')
+        {
+            $proxy = false;
+            $url = $this->proxyUrl;
+        }
+
         // Do a curl fetch
-        $curl = curl_init($this->getUrl());
+        $curl = curl_init($url);
         curl_setopt_array(
             $curl,
-            $this->getCurlOptsCustom($method)
+            $this->getCurlOptsCustom($method, $proxy)
         );
         $response = curl_exec($curl);
         if ($response !== false)
@@ -131,15 +140,18 @@ class Client
      *
      * @return array
      */
-    protected function getCurlOptsCustom($method)
+    protected function getCurlOptsCustom($method, $proxy)
     {
-        return
-            $this->getCurlOpts($method) +
-            [
-                CURLOPT_PROXY => $this->proxyUrl,
-                CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
-                CURLOPT_FOLLOWLOCATION => 1,
-            ];
+        $extraOpts = [
+            CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
+            CURLOPT_FOLLOWLOCATION => 1,
+        ];
+        if ($proxy)
+        {
+            $extraOpts[CURLOPT_PROXY] = $this->proxyUrl;
+        }
+
+        return $this->getCurlOpts($method) + $extraOpts;
     }
 
     /**

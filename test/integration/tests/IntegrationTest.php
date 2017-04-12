@@ -7,6 +7,7 @@
 namespace Proximate\Tests\Integration;
 
 use Proximate\Tests\Integration\TestCase;
+use Openbuildings\Spiderling\Driver_Simple;
 
 class IntegrationTest extends TestCase
 {
@@ -22,5 +23,13 @@ class IntegrationTest extends TestCase
             find('div')->
             text();
         $this->assertContains('Hello', $text);
+    }
+
+    public function driver_simple() : Driver_Simple
+    {
+        $driver = new Driver_Simple();
+        $driver->request_factory(new HTTP());
+
+        return $driver;
     }
 }

@@ -7,9 +7,12 @@
 namespace Proximate\Tests\Integration;
 
 use Openbuildings\Spiderling\Driver_Simple_RequestFactory_HTTP;
+use Openbuildings\Spiderling\Exception_Curl;
 
 class HTTP extends Driver_Simple_RequestFactory_HTTP
 {
+    protected $proxyAddress;
+
     /**
      * Perform the request, follow redirects, return the response
      * @param  string $method
@@ -25,6 +28,11 @@ class HTTP extends Driver_Simple_RequestFactory_HTTP
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($curl, CURLOPT_USERAGENT, $this->user_agent());
+
+        if ($this->proxyAddress)
+        {
+            curl_setopt($curl, CURLOPT_PROXY, $this->proxyAddress);
+        }
 
         if ($post)
         {
@@ -48,5 +56,10 @@ class HTTP extends Driver_Simple_RequestFactory_HTTP
         $this->_current_url = urldecode(curl_getinfo($curl, CURLINFO_EFFECTIVE_URL));
 
         return $response;
+    }
+
+    public function setProxyAddress($proxyAddress)
+    {
+        $this->proxyAddress = $proxyAddress;
     }
 }

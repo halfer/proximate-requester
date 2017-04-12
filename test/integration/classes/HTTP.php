@@ -10,7 +10,7 @@ use Openbuildings\Spiderling\Driver_Simple_RequestFactory_HTTP;
 
 class HTTP extends Driver_Simple_RequestFactory_HTTP
 {
-    /**
+	/**
 	 * Perform the request, follow redirects, return the response
 	 * @param  string $method
 	 * @param  string $url
@@ -35,7 +35,14 @@ class HTTP extends Driver_Simple_RequestFactory_HTTP
 
 		if ($response === FALSE OR curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200)
 		{
-			throw new Exception_Curl('Curl: Download Error: :error, status :status on url :url', array(':url' => $url, ':status' => curl_getinfo($curl, CURLINFO_HTTP_CODE), ':error' => curl_error($curl)));
+			throw new Exception_Curl(
+				'Curl: Download Error: :error, status :status on url :url',
+				array(
+					':url' => $url,
+					':status' => curl_getinfo($curl, CURLINFO_HTTP_CODE),
+					':error' => curl_error($curl)
+				)
+			);
 		}
 
 		$this->_current_url = urldecode(curl_getinfo($curl, CURLINFO_EFFECTIVE_URL));

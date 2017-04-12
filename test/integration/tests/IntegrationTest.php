@@ -8,11 +8,12 @@ namespace Proximate\Tests\Integration;
 
 use Proximate\Tests\Integration\TestCase;
 use Openbuildings\Spiderling\Driver_Simple;
+use Proximate\Client;
 
 class IntegrationTest extends TestCase
 {
     const URL_BASE = 'http://127.0.0.1:8090';
-    const URL_PROXY = 'http://127.0.0.1:8081';
+    const URL_PROXY = 'http://127.0.0.1:8082';
 
     /**
      * @driver simple
@@ -39,14 +40,12 @@ class IntegrationTest extends TestCase
     /**
      * Turns on the proxy server
      *
-     * @todo Pass the proxy URL to this, so it is more customisable
-     * @todo Pass in a custom file cache path
      * @todo This can probably be moved to the parent class
      */
-    public function setUpBeforeClass()
+    public static function setUpBeforeClass()
     {
         $root = realpath(__DIR__ . '/../../..');
-        $command = "php {$root}/console/proxy-server.php &";
+        $command = "php {$root}/test/integration/scripts/proxy.php >/dev/null &";
 
         $output = $return = null;
         exec($command, $output, $return);
@@ -56,6 +55,10 @@ class IntegrationTest extends TestCase
                 "Could not start the proxy server script"
             );
         }
+
+        // The proxy needs some settling down time, maybe we could add a feature into
+        // the Proximate\Client to do this better?
+        sleep(2);
     }
 
     /**
@@ -63,16 +66,17 @@ class IntegrationTest extends TestCase
      */
     public function setUp()
     {
+        // @todo Implement the cache clearing at /tmp/proximate-tests/cache
     }
 
     /**
      * Shuts down the proxy server
      *
-     * @todo Send a KILL verb to the proxy server
      * @todo This can probably be moved to the parent class
      */
-    public function tearDownAfterClass()
+    public static function tearDownAfterClass()
     {
-        echo "Shut down the proxy server here\n";
+        $client = new Client(self::URL_PROXY);
+        $client->fetch('SHUTDOWN');
     }
 }

@@ -87,6 +87,18 @@ class Proxy
     }
 
     /**
+     * Method to customise the features of the proxy server
+     */
+    protected function getVerbHandlers()
+    {
+        return [
+            "#^CONNECT ([^ ]+):(\d+) #"   => 'handleHttpsConnect',
+            '#^GET #'                     => 'handleHttpConnect',
+            '#^SHUTDOWN#'                 => 'handleExit',
+        ];
+    }
+
+    /**
      * Default HTTP listening loop
      */
     public function listenLoop()
@@ -99,7 +111,8 @@ class Proxy
         );
         $this->getServerSocket()->setBlocking(false);
 
-        while(true)
+        $continue = true;
+        while($continue)
         {
             // Ensures we do not read from a closed socket
             if ($this->exit)
@@ -122,14 +135,17 @@ class Proxy
             // The buffer size should be enough to accommodate the request - 4K should be fine
             $input = $this->getClientSocket()->read(1024 * 4);
 
-            $match = null;
-            if(preg_match("'^CONNECT ([^ ]+):(\d+) '", $input, $match)) // HTTPS
+            // Run through methods to see if we know how to handle this input
+            foreach ($this->getVerbHandlers() as $regex => $handler)
             {
-                $this->handleHttpsConnect($input);
-            }
-            else
-            {
-                $this->handleHttpConnect($input);
+                if(preg_match($regex, $input))
+                {
+                    $continue = $this->$handler($input);
+                    if (!$continue)
+                    {
+                        break;
+                    }
+                }
             }
 
             $this->getClientSocket()->close();
@@ -148,6 +164,8 @@ class Proxy
         $this->log("HTTPS proxying not supported", Logger::ERROR);
 
         $this->writeDataToClient("HTTP/1.1 500 Server error\r\n\r\n");
+
+        return true;
     }
 
     /**
@@ -203,6 +221,15 @@ class Proxy
         }
 
         $this->writeDataToClient($targetSiteData);
+
+        return true;
+    }
+
+    protected function handleExit($request)
+    {
+        $this->log('Shutdown request received', Logger::INFO);
+
+        return false;
     }
 
     protected function writeDataToClient($data)

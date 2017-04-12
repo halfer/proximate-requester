@@ -23,12 +23,11 @@ trait Curl
         }
         elseif ($method == 'POST')
         {
-            $options['CURLOPT_POST'] = 1;
+            $options[CURLOPT_POST] = 1;
         }
         else
         {
-            // @todo Add custom method, see http://stackoverflow.com/q/13420952
-            throw new Exception\Init("Custom HTTP method not currently supported");
+            $options[CURLOPT_CUSTOMREQUEST] = $method;
         }
 
         return [

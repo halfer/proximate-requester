@@ -10,43 +10,43 @@ use Openbuildings\Spiderling\Driver_Simple_RequestFactory_HTTP;
 
 class HTTP extends Driver_Simple_RequestFactory_HTTP
 {
-	/**
-	 * Perform the request, follow redirects, return the response
-	 * @param  string $method
-	 * @param  string $url
-	 * @param  array $post
-	 * @return string
-	 */
-	public function execute($method, $url, array $post = array())
-	{
-		$curl = curl_init($url);
+    /**
+     * Perform the request, follow redirects, return the response
+     * @param  string $method
+     * @param  string $url
+     * @param  array $post
+     * @return string
+     */
+    public function execute($method, $url, array $post = array())
+    {
+        $curl = curl_init($url);
 
-		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-		curl_setopt($curl, CURLOPT_USERAGENT, $this->user_agent());
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($curl, CURLOPT_USERAGENT, $this->user_agent());
 
-		if ($post)
-		{
-			curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
-		}
+        if ($post)
+        {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
+        }
 
-		$response = curl_exec($curl);
+        $response = curl_exec($curl);
 
-		if ($response === FALSE OR curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200)
-		{
-			throw new Exception_Curl(
-				'Curl: Download Error: :error, status :status on url :url',
-				array(
-					':url' => $url,
-					':status' => curl_getinfo($curl, CURLINFO_HTTP_CODE),
-					':error' => curl_error($curl)
-				)
-			);
-		}
+        if ($response === FALSE OR curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200)
+        {
+            throw new Exception_Curl(
+                'Curl: Download Error: :error, status :status on url :url',
+                array(
+                    ':url' => $url,
+                    ':status' => curl_getinfo($curl, CURLINFO_HTTP_CODE),
+                    ':error' => curl_error($curl)
+                )
+            );
+        }
 
-		$this->_current_url = urldecode(curl_getinfo($curl, CURLINFO_EFFECTIVE_URL));
+        $this->_current_url = urldecode(curl_getinfo($curl, CURLINFO_EFFECTIVE_URL));
 
-		return $response;
-	}
+        return $response;
+    }
 }

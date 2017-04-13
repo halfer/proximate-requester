@@ -129,7 +129,7 @@ class Client
         if ($response !== false)
         {
             $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-            $this->responseHeaders = explode("\r\n", substr($response, 0, $headerSize));
+            $this->responseHeaders = substr($response, 0, $headerSize);
             $this->responseBody = substr($response, $headerSize);
         }
         curl_close($curl);
@@ -181,6 +181,8 @@ class Client
             );
         }
 
-        return $this->responseHeaders;
+        $headers = explode("\r\n", trim($this->responseHeaders));
+
+        return $headers;
     }
 }

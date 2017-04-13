@@ -15,6 +15,8 @@ class IntegrationTest extends TestCase
     const URL_BASE = 'http://127.0.0.1:8090';
     const URL_PROXY = 'http://127.0.0.1:8082';
 
+    protected $requestFactory;
+
     /**
      * @driver simple
      */
@@ -25,6 +27,9 @@ class IntegrationTest extends TestCase
             find('div')->
             text();
         $this->assertContains('Hello', $text);
+
+        $headers = $this->getRequestFactory()->getLastHeaders();
+        print_r($headers);
     }
 
     public function driver_simple() : Driver_Simple
@@ -33,8 +38,24 @@ class IntegrationTest extends TestCase
         $requestFactory = new HTTP();
         $requestFactory->setProxyAddress(self::URL_PROXY);
         $driver->request_factory($requestFactory);
+        $this->setRequestFactory($requestFactory);
 
         return $driver;
+    }
+
+    protected function setRequestFactory($requestFactory)
+    {
+        $this->requestFactory = $requestFactory;
+    }
+
+    /**
+     * Gets the request factory for this request
+     *
+     * @return HTTP
+     */
+    protected function getRequestFactory()
+    {
+        return $this->requestFactory;
     }
 
     /**

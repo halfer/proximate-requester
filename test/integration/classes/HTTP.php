@@ -12,6 +12,7 @@ use Openbuildings\Spiderling\Exception_Curl;
 class HTTP extends Driver_Simple_RequestFactory_HTTP
 {
     protected $proxyAddress;
+    protected $lastHeaders;
 
     /**
      * Perform the request, follow redirects, return the response
@@ -22,12 +23,14 @@ class HTTP extends Driver_Simple_RequestFactory_HTTP
      */
     public function execute($method, $url, array $post = array())
     {
+        $this->clearHeaders();
         $curl = curl_init($url);
 
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($curl, CURLOPT_USERAGENT, $this->user_agent());
+        curl_setopt($curl, CURLOPT_HEADERFUNCTION, [$this, 'headerFunction']);
 
         if ($this->proxyAddress)
         {
@@ -61,5 +64,35 @@ class HTTP extends Driver_Simple_RequestFactory_HTTP
     public function setProxyAddress($proxyAddress)
     {
         $this->proxyAddress = $proxyAddress;
+    }
+
+    protected function clearHeaders()
+    {
+        $this->lastHeaders = [];
+    }
+
+    /**
+     * Receives the headers one by one
+     *
+     * @todo Change this to an associate array format
+     *
+     * @param resource $curl
+     * @param string $header
+     * @return integer
+     */
+    public function headerFunction($curl, $header)
+    {
+        $trimmedHeader = trim($header);
+        if ($trimmedHeader)
+        {
+            $this->lastHeaders[] = $trimmedHeader;
+        }
+
+        return strlen($header);
+    }
+
+    public function getLastHeaders()
+    {
+        return $this->lastHeaders;
     }
 }

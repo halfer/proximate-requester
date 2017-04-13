@@ -60,4 +60,17 @@ trait ResponseParser
             return strpos($element, 'Transfer-Encoding') !== 0;
         });
     }
+
+    protected function addHeaders($response, array $additionalHeaders)
+    {
+        return
+            $this->implodeHeaders(
+                array_merge(
+                    $this->getHeaders($response),
+                    $additionalHeaders
+                )
+            ) .
+            "\r\n" .
+            $this->getBody($response);
+    }
 }

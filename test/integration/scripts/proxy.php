@@ -22,6 +22,7 @@ try
         initFileCache()->
         initProxy()->
         getProxy()->
+        enableDebugHeaders()->
         listenLoop();
 }
 catch (\Proximate\Exception\Init $e)

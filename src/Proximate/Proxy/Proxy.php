@@ -24,6 +24,9 @@ class Proxy
     use \Proximate\Feature\ResponseParser;
 
     const REAL_URL_HEADER_NAME = 'X-Real-Url';
+    const RESPONSE_STATUS_HEADER_NAME = 'X-Proximate-Response-Status';
+    const RESPONSE_CACHED = 'From-Cache';
+    const RESPONSE_LIVE = 'From-Live';
 
     protected $server;
     protected $client;
@@ -33,6 +36,7 @@ class Proxy
     protected $exit = false;
     protected $writeBuffer;
     protected $realUrlHeaderName = self::REAL_URL_HEADER_NAME;
+    protected $debugHeaders = false;
 
     public function __construct(Socket $serverSocket, CacheItemPoolInterface $cachePool, CacheAdapter $cacheAdapter)
     {
@@ -69,6 +73,13 @@ class Proxy
 
         pcntl_signal(SIGINT, [$this, 'closeServer']);
         pcntl_signal(SIGTERM, [$this, 'closeServer']);
+
+        return $this;
+    }
+
+    public function enableDebugHeaders()
+    {
+        $this->debugHeaders = true;
 
         return $this;
     }
@@ -150,6 +161,9 @@ class Proxy
 
             $this->getClientSocket()->close();
         }
+
+        // @todo Socket closing needs further attention
+        #$this->closeServer();
     }
 
     /**
@@ -190,7 +204,7 @@ class Proxy
         $key = $this->getCacheAdapter()->createCacheKey($request, $url);
         $cacheItem = $this->getCachePool()->getItem($key);
 
-        if ($cacheItem->isHit())
+        if ($isCached = $cacheItem->isHit())
         {
             // If it does then read it here
             $cacheData = $cacheItem->get();
@@ -218,6 +232,16 @@ class Proxy
             {
                 $targetSiteData = $this->getFailureResponse();
            }
+        }
+
+        // Inject proxy metadata if it is requested
+        if ($this->debugHeaders)
+        {
+            $status = $isCached ? self::RESPONSE_CACHED : self::RESPONSE_LIVE;
+            $targetSiteData = $this->addHeaders(
+                $targetSiteData,
+                [self::RESPONSE_STATUS_HEADER_NAME . ': ' . $status]
+            );
         }
 
         $this->writeDataToClient($targetSiteData);
@@ -372,6 +396,7 @@ class Proxy
     /**
      * Returns URL if real URL is present, or null
      *
+     * @todo Looks like this has a double ^^ anchor?
      * @param string $input
      */
     protected function checkRealUrlHeader($input)

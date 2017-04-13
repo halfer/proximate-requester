@@ -15,6 +15,7 @@ try
     $proxier->
         initSimpleSystem()->
         getProxy()->
+        enableDebugHeaders()->
         listenLoop();
 }
 catch (\Proximate\Exception\Init $e)

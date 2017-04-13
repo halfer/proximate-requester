@@ -74,8 +74,6 @@ class HTTP extends Driver_Simple_RequestFactory_HTTP
     /**
      * Receives the headers one by one
      *
-     * @todo Change this to an associate array format
-     *
      * @param resource $curl
      * @param string $header
      * @return integer
@@ -85,7 +83,16 @@ class HTTP extends Driver_Simple_RequestFactory_HTTP
         $trimmedHeader = trim($header);
         if ($trimmedHeader)
         {
-            $this->lastHeaders[] = $trimmedHeader;
+            $parts = explode(':', $trimmedHeader, 2);
+            if (count($parts) == 2)
+            {
+                $key = trim($parts[0]);
+                $value = trim($parts[1]);
+                if ($key && $value)
+                {
+                    $this->lastHeaders[$key] = $value;
+                }
+            }
         }
 
         return strlen($header);

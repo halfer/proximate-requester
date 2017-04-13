@@ -99,12 +99,14 @@ class Proxy
 
     /**
      * Method to customise the features of the proxy server
+     *
+     * Do I need to add more HTTP verbs? PUT, PATCH, DELETE?
      */
     protected function getVerbHandlers()
     {
         return [
             "#^CONNECT ([^ ]+):(\d+) #"   => 'handleHttpsConnect',
-            '#^GET #'                     => 'handleHttpConnect',
+            '#^(GET|POST) #'              => 'handleHttpConnect',
             '#^SHUTDOWN#'                 => 'handleExit',
         ];
     }

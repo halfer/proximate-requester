@@ -6,52 +6,37 @@
 
 namespace Proximate\Tests\Integration;
 
-use Openbuildings\Spiderling\Driver_Simple;
+//use Openbuildings\Spiderling\Driver_Simple;
+use Curl\Curl;
 use Proximate\Client;
 
 trait ProxyTesting
 {
     protected $PROXY_CACHE_PATH = '/tmp/proximate-tests/cache';
-
-    protected $requestFactory;
-
-    public function driver_simple() : Driver_Simple
-    {
-        $driver = new Driver_Simple();
-        $requestFactory = new HTTP();
-        $requestFactory->setProxyAddress(self::URL_PROXY);
-        $driver->request_factory($requestFactory);
-        $this->setRequestFactory($requestFactory);
-
-        return $driver;
-    }
-
-    protected function setRequestFactory($requestFactory)
-    {
-        $this->requestFactory = $requestFactory;
-    }
-
-    /**
-     * Gets the request factory for this request
-     *
-     * @return HTTP
-     */
-    protected function getRequestFactory()
-    {
-        return $this->requestFactory;
-    }
+    protected $curlClient;
 
     /**
      * Gets the value of the requested header from the last HTTP operation
-     *
-     * @todo Put a guard clause around the request factory fetch
      *
      * @param string $headerName
      * @return string
      */
     protected function getLastHeader($headerName)
     {
-        $headers = $this->getRequestFactory()->getLastHeaders();
+        $headers = [];
+        foreach ($this->getCurlClient()->response_headers as $header)
+        {
+            $parts = explode(':', $header, 2);
+            if (count($parts) == 2)
+            {
+                $key = trim($parts[0]);
+                $value = trim($parts[1]);
+                if ($key && $value)
+                {
+                    $headers[$key] = $value;
+                }
+            }
+        }
 
         return isset($headers[$headerName]) ? $headers[$headerName] : null;
     }
@@ -82,6 +67,9 @@ trait ProxyTesting
 
     /**
      * Wipe the proxy server cache between tests
+     *
+     * @todo Rename this, so setUp() can be used in tests - it is too "magic" here
+     * (if that is the case, should I rename setUpBeforeClass and tearDownAfterClass too?)
      */
     public function setUp()
     {
@@ -89,6 +77,19 @@ trait ProxyTesting
         {
             unlink($file);
         }
+
+        // Set up a new curl client
+        $this->curlClient = new Curl();
+    }
+
+    /**
+     * Gets the current curl instance
+     *
+     * @return Curl
+     */
+    protected function getCurlClient()
+    {
+        return $this->curlClient;
     }
 
     /**

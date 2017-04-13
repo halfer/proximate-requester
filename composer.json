@@ -16,7 +16,8 @@
         "mockery/mockery": "1.0.0-alpha1",
         "phpunit/phpunit": "^6.1",
         "halfer/spiderling-utils": "dev-master",
-        "openbuildings/phpunit-spiderling": "0.2.0-rc.1"
+        "openbuildings/phpunit-spiderling": "0.2.0-rc.1",
+        "curl/curl": "^1.6"
     },
     "repositories": [
       {

@@ -11,5 +11,4 @@ require_once $rootPath . '/vendor/autoload.php';
 $classPath = $rootPath . '/test/integration/classes';
 require_once $classPath . '/TestCase.php';
 require_once $classPath . '/TestListener.php';
-require_once $classPath . '/HTTP.php';
 require_once $classPath . '/ProxyTesting.php';

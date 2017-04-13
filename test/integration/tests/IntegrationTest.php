@@ -7,6 +7,7 @@
 namespace Proximate\Tests\Integration;
 
 use Proximate\Tests\Integration\TestCase;
+use Proximate\Proxy\Proxy;
 
 class IntegrationTest extends TestCase
 {
@@ -18,15 +19,24 @@ class IntegrationTest extends TestCase
     /**
      * @driver simple
      */
-    public function testSomething()
+    public function testCachesOnSubsequentGetRequest()
     {
-        $text = $this->
-            visit(self::URL_BASE . '/test.html')->
+        // First visit should be uncached
+        $text = $this->visit(self::URL_BASE . '/test.html')->
             find('div')->
             text();
+        // Check we're on the right page
         $this->assertContains('Hello', $text);
+        $this->assertEquals(
+            Proxy::RESPONSE_LIVE,
+            $this->getLastHeader(Proxy::RESPONSE_STATUS_HEADER_NAME)
+        );
 
-        $headers = $this->getRequestFactory()->getLastHeaders();
-        print_r($headers);
+        // Second visit should be cached
+        $this->visit(self::URL_BASE . '/test.html');
+        $this->assertEquals(
+            Proxy::RESPONSE_CACHED,
+            $this->getLastHeader(Proxy::RESPONSE_STATUS_HEADER_NAME)
+        );
     }
 }

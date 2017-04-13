@@ -11,6 +11,8 @@ use Proximate\Client;
 
 trait ProxyTesting
 {
+    protected $PROXY_CACHE_PATH = '/tmp/proximate-tests/cache';
+
     protected $requestFactory;
 
     public function driver_simple() : Driver_Simple
@@ -40,9 +42,24 @@ trait ProxyTesting
     }
 
     /**
+     * Gets the value of the requested header from the last HTTP operation
+     *
+     * @todo Put a guard clause around the request factory fetch
+     *
+     * @param string $headerName
+     * @return string
+     */
+    protected function getLastHeader($headerName)
+    {
+        $headers = $this->getRequestFactory()->getLastHeaders();
+
+        return isset($headers[$headerName]) ? $headers[$headerName] : null;
+    }
+
+    /**
      * Turns on the proxy server
      *
-     * @todo This can probably be moved to the parent class
+     * @todo Pass a cache path to this script ($this->PROXY_CACHE_PATH)
      */
     public static function setUpBeforeClass()
     {
@@ -68,7 +85,10 @@ trait ProxyTesting
      */
     public function setUp()
     {
-        // @todo Implement the cache clearing at /tmp/proximate-tests/cache
+        foreach(glob($this->PROXY_CACHE_PATH . '/*') as $file)
+        {
+            unlink($file);
+        }
     }
 
     /**

@@ -64,4 +64,23 @@ trait RequestParser
 
         return $body;
     }
+
+    protected function getPostVarsFromRequest($request)
+    {
+        $body = $this->getBodyFromRequest($request);
+        $post = [];
+        foreach (explode('&', $body) as $chunk)
+        {
+            $param = explode("=", $chunk);
+
+            if (count($param) == 2)
+            {
+                $key = urldecode($param[0]);
+                $value = urldecode($param[1]);
+                $post[$key] = $value;
+            }
+        }
+
+        return $post;
+    }
 }

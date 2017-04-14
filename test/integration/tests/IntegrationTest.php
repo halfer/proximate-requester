@@ -44,6 +44,17 @@ class IntegrationTest extends TestCase
         $this->assertEquals('POST', $curl->response, 'Ensure a simple fetch uses POST');
     }
 
+    public function testPostVariables()
+    {
+        $vars = ['hello' => '123', ];
+        $curl = $this->postPage($vars, 'post-vars.php');
+        $this->assertEquals(
+            json_encode($vars),
+            $curl->response,
+            'Ensure POST vars reach the target'
+        );
+    }
+
     /**
      * @driver simple
      */

@@ -222,7 +222,8 @@ class Proxy
         else
         {
             // @todo Add headers to this (e.g. User Agent)
-            $ok = $this->fetch($url, $method);
+            $vars = ($method == 'POST') ? $this->getPostVarsFromRequest($request) : [];
+            $ok = $this->fetch($url, $method, $vars);
             if ($ok)
             {
                 $targetSiteData = $this->saveToCache(
@@ -273,14 +274,14 @@ class Proxy
      * @param string $method
      * @return boolean
      */
-    public function fetch($url, $method)
+    public function fetch($url, $method, $vars = [])
     {
         $this->resetBuffer();
 
         $curl = curl_init($url);
         curl_setopt_array(
             $curl,
-            $this->getCurlOptsCustom($method)
+            $this->getCurlOptsCustom($method, $vars)
         );
         $result = curl_exec($curl);
 
@@ -355,10 +356,10 @@ class Proxy
      *
      * @return array
      */
-    protected function getCurlOptsCustom($method)
+    protected function getCurlOptsCustom($method, $vars = [])
     {
         return
-            $this->getCurlOpts($method) +
+            $this->getCurlOpts($method, $vars) +
             [
                 CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
                 CURLOPT_FOLLOWLOCATION => 0,

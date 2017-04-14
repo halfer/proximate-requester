@@ -102,6 +102,7 @@ class Client
     /**
      * Performs a fetch using cURL
      *
+     * @todo Need to add POST $vars to this
      * @todo Is it worth being more lenient about \r\n - maybe use preg_split()?
      */
     public function fetch($method = 'GET')

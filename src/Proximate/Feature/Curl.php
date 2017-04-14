@@ -13,7 +13,7 @@ trait Curl
      *
      * @return array
      */
-    protected function getCurlOpts($method)
+    protected function getCurlOpts($method, array $vars = [])
     {
         $options = [];
 
@@ -23,7 +23,7 @@ trait Curl
         }
         elseif ($method == 'POST')
         {
-            $options[CURLOPT_POST] = 1;
+            $options[CURLOPT_POSTFIELDS] = $vars;
         }
         else
         {

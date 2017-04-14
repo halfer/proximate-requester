@@ -32,6 +32,18 @@ class IntegrationTest extends TestCase
 
     protected static $proxyUrl;
 
+    public function testUncachedGet()
+    {
+        $curl = $this->visitPage('method.php');
+        $this->assertEquals('GET', $curl->response, 'Ensure a simple fetch uses GET');
+    }
+
+    public function testUncachedPost()
+    {
+        $curl = $this->postPage([], 'method.php');
+        $this->assertEquals('POST', $curl->response, 'Ensure a simple fetch uses POST');
+    }
+
     /**
      * @driver simple
      */
@@ -74,15 +86,15 @@ class IntegrationTest extends TestCase
         $this->assertIsLive('Checks that a new POST is fetched live');
     }
 
-    protected function visitPage()
+    protected function visitPage($leaf = 'test.html')
     {
-        return $this->getCurlClient()->get($this->getWebServerUrl() . '/test.html');
+        return $this->getCurlClient()->get($this->getWebServerUrl() . '/' . $leaf);
     }
 
-    protected function postPage(array $data = [])
+    protected function postPage(array $data = [], $leaf = 'test.html')
     {
         return $this->getCurlClient()->post(
-            $this->getWebServerUrl() . '/test.html',
+            $this->getWebServerUrl() . '/' . $leaf,
             $data
         );
     }

@@ -33,7 +33,6 @@ trait Curl
         return [
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HEADER => 1,
-            CURLOPT_VERBOSE => 1,
             CURLOPT_TIMEOUT => 15,
             CURLOPT_NOPROGRESS => 1,
             CURLOPT_VERBOSE => 0,

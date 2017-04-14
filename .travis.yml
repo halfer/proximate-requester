@@ -12,5 +12,4 @@ before_script:
 script:
   - vendor/bin/phpunit
 after_script:
-  - echo "Proxy log"
   - cat /tmp/proximate.log

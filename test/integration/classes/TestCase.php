@@ -10,4 +10,8 @@ use halfer\SpiderlingUtils\NamespacedTestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
+    protected function getWebServerUrl()
+    {
+        return TestListener::getWebServerUrl();
+    }
 }

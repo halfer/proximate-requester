@@ -102,10 +102,9 @@ class Client
     /**
      * Performs a fetch using cURL
      *
-     * @todo Need to add POST $vars to this
      * @todo Is it worth being more lenient about \r\n - maybe use preg_split()?
      */
-    public function fetch($method = 'GET')
+    public function fetch($method = 'GET', array $data = [])
     {
         // Reset to empty
         $this->responseBody = null;
@@ -124,7 +123,7 @@ class Client
         $curl = curl_init($url);
         curl_setopt_array(
             $curl,
-            $this->getCurlOptsCustom($method, $proxy)
+            $this->getCurlOptsCustom($method, $data, $proxy)
         );
         $response = curl_exec($curl);
         if ($response !== false)
@@ -134,6 +133,8 @@ class Client
             $this->responseBody = substr($response, $headerSize);
         }
         curl_close($curl);
+
+        return $this;
     }
 
     /**
@@ -141,7 +142,7 @@ class Client
      *
      * @return array
      */
-    protected function getCurlOptsCustom($method, $proxy)
+    protected function getCurlOptsCustom($method, array $data, $proxy)
     {
         $extraOpts = [
             CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
@@ -152,7 +153,7 @@ class Client
             $extraOpts[CURLOPT_PROXY] = $this->proxyUrl;
         }
 
-        return $this->getCurlOpts($method) + $extraOpts;
+        return $this->getCurlOpts($method, $data) + $extraOpts;
     }
 
     /**

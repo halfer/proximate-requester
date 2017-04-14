@@ -148,11 +148,6 @@ class IntegrationTest extends TestCase
         self::stopProxy(self::getProxyServerUrl());
     }
 
-    protected function getWebServerUrl()
-    {
-        return TestListener::getWebServerUrl();
-    }
-
     protected static function getProxyServerUrl()
     {
         return self::$proxyUrl;

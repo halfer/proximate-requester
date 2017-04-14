@@ -26,6 +26,7 @@ class IntegrationTest extends TestCase
     // the "Address already in use" problem
     const URL_BASE = 'http://127.0.0.1:8090';
     const URL_PROXY = 'http://127.0.0.1:8082';
+    const PROXY_CACHE_PATH = '/tmp/proximate-tests/cache';
 
     /**
      * @driver simple
@@ -82,5 +83,21 @@ class IntegrationTest extends TestCase
             Proxy::RESPONSE_CACHED,
             $this->getLastHeader(Proxy::RESPONSE_STATUS_HEADER_NAME)
         );
+    }
+
+    public static function setupBeforeClass()
+    {
+        self::startProxy();
+    }
+
+    public function setUp()
+    {
+        $this->clearCache(self::PROXY_CACHE_PATH);
+        $this->initCurl();
+    }
+
+    public static function tearDownAfterClass()
+    {
+        self::stopProxy();
     }
 }

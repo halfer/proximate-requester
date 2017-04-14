@@ -44,9 +44,10 @@ trait ProxyTesting
     /**
      * Turns on the proxy server
      *
+     * @todo Can we use fork() here instead of an external script?
      * @todo Pass a cache path to this script ($this->PROXY_CACHE_PATH)
      */
-    public static function setUpBeforeClass()
+    protected static function startProxy()
     {
         $root = realpath(__DIR__ . '/../../..');
         $command = "php {$root}/test/integration/scripts/proxy.php >/dev/null &";
@@ -67,18 +68,20 @@ trait ProxyTesting
 
     /**
      * Wipe the proxy server cache between tests
-     *
-     * @todo Rename this, so setUp() can be used in tests - it is too "magic" here
-     * (if that is the case, should I rename setUpBeforeClass and tearDownAfterClass too?)
      */
-    public function setUp()
+    public function clearCache($cachePath)
     {
-        foreach(glob($this->PROXY_CACHE_PATH . '/*') as $file)
+        foreach(glob($cachePath . '/*') as $file)
         {
             unlink($file);
         }
+    }
 
-        // Set up a new curl client
+    /**
+     * Set up a new curl client
+     */
+    public function initCurl()
+    {
         $this->curlClient = new Curl();
     }
 
@@ -94,10 +97,8 @@ trait ProxyTesting
 
     /**
      * Shuts down the proxy server
-     *
-     * @todo This can probably be moved to the parent class
      */
-    public static function tearDownAfterClass()
+    public static function stopProxy()
     {
         $client = new Client(self::URL_PROXY);
         $client->fetch('SHUTDOWN');

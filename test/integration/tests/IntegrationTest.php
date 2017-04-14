@@ -22,18 +22,21 @@ class IntegrationTest extends TestCase
 {
     use ProxyTesting;
 
-    // @todo Use the ports 10000-65000 based on (current unix time mod 55000) to combat
-    // the "Address already in use" problem
-    const URL_BASE = 'http://127.0.0.1:8090';
-    const URL_PROXY = 'http://127.0.0.1:8082';
-    const PROXY_CACHE_PATH = '/tmp/proximate-tests/cache';
+    #const URL_SERVER = 'http://127.0.0.1';
+    #const URL_PROXY = 'http://127.0.0.1';
+    const URL_PROXY_PORT_MIN = 35000;
+    const URL_PROXY_PORT_MAX = 49999;
+    const PROXY_CACHE_PATH = '/tmp/proximate-tests';
+    const PROXY_CACHE_FOLDER = 'cache';
+
+    protected static $proxyUrl;
 
     /**
      * @driver simple
      */
     public function testCachesOnSubsequentGetRequest()
     {
-        $this->getCurlClient()->setOpt(CURLOPT_PROXY, self::URL_PROXY);
+        $this->getCurlClient()->setOpt(CURLOPT_PROXY, self::getProxyServerUrl()); // Move this to parent
 
         // First visit should be uncached
         $this->visitPage();
@@ -49,7 +52,7 @@ class IntegrationTest extends TestCase
      */
     public function testDoesNotCacheWhenMethodIsChanged()
     {
-        $this->getCurlClient()->setOpt(CURLOPT_PROXY, self::URL_PROXY);
+        $this->getCurlClient()->setOpt(CURLOPT_PROXY, self::getProxyServerUrl()); // Move this to parent
 
         $this->visitPage();
         $this->assertIsLive();
@@ -61,12 +64,12 @@ class IntegrationTest extends TestCase
 
     protected function visitPage()
     {
-        return $this->getCurlClient()->get(self::URL_BASE . '/test.html');
+        return $this->getCurlClient()->get($this->getWebServerUrl() . '/test.html');
     }
 
     protected function postPage()
     {
-        return $this->getCurlClient()->post(self::URL_BASE . '/test.html');
+        return $this->getCurlClient()->post($this->getWebServerUrl() . '/test.html');
     }
 
     protected function assertIsLive()
@@ -87,7 +90,11 @@ class IntegrationTest extends TestCase
 
     public static function setupBeforeClass()
     {
-        self::startProxy();
+        // Choose URLs based on random ports
+        $proxyPort = self::choosePort(self::URL_PROXY_PORT_MIN, self::URL_PROXY_PORT_MAX);
+        self::$proxyUrl = '127.0.0.1:' . $proxyPort;
+
+        self::startProxy(self::getProxyServerUrl(), '/tmp/proximate-tests');
     }
 
     public function setUp()
@@ -98,6 +105,33 @@ class IntegrationTest extends TestCase
 
     public static function tearDownAfterClass()
     {
-        self::stopProxy();
+        self::stopProxy(self::getProxyServerUrl());
+    }
+
+    /**
+     * Cycles through a port choice depending on the current UNIX time
+     *
+     * @todo Replicated from TestListener, need to move this to a trait
+     *
+     * @param integer $min
+     * @param integer $max
+     */
+    protected static function choosePort($min, $max)
+    {
+        $range = $max - $min + 1;
+        $mod = time() % $range;
+        $port = $min + $mod;
+
+        return $port;
+    }
+
+    protected function getWebServerUrl()
+    {
+        return TestListener::getWebServerUrl();
+    }
+
+    protected static function getProxyServerUrl()
+    {
+        return self::$proxyUrl;
     }
 }

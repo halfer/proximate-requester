@@ -11,6 +11,11 @@ use halfer\SpiderlingUtils\Server;
 
 class TestListener extends BaseTestListener
 {
+    const URL_SERVER_PORT_MIN = 20000;
+    const URL_SERVER_PORT_MAX = 34999;
+
+    protected static $webServerUrl;
+
 	/**
 	 * Required, return true if you recognise the test suite name or namespace
 	 *
@@ -27,7 +32,10 @@ class TestListener extends BaseTestListener
 	protected function setupServers()
 	{
 		$docRoot = realpath(__DIR__ . '/..') . '/web';
-		$server = new Server($docRoot);
+        self::$webServerUrl =
+            'http://127.0.0.1:' .
+            self::choosePort(self::URL_SERVER_PORT_MIN, self::URL_SERVER_PORT_MAX);
+		$server = new Server($docRoot, self::$webServerUrl);
 
 		// Wait for an alive response
         $integrationRoot = realpath(__DIR__ . '/..');
@@ -36,4 +44,24 @@ class TestListener extends BaseTestListener
 
 		$this->addServer($server);
 	}
+
+    /**
+     * Cycles through a port choice depending on the current UNIX time
+     *
+     * @param integer $min
+     * @param integer $max
+     */
+    protected static function choosePort($min, $max)
+    {
+        $range = $max - $min + 1;
+        $mod = time() % $range;
+        $port = $min + $mod;
+
+        return $port;
+    }
+
+    public static function getWebServerUrl()
+    {
+        return self::$webServerUrl;
+    }
 }

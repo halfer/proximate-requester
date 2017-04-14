@@ -6,14 +6,14 @@
 
 namespace Proximate\Tests\Integration;
 
-//use Openbuildings\Spiderling\Driver_Simple;
+use Proximate\Proxy\FileProxy;
 use Curl\Curl;
 use Proximate\Client;
 
 trait ProxyTesting
 {
-    protected $PROXY_CACHE_PATH = '/tmp/proximate-tests/cache';
     protected $curlClient;
+    protected static $CACHE_FOLDER = 'cache';
 
     /**
      * Gets the value of the requested header from the last HTTP operation
@@ -42,28 +42,41 @@ trait ProxyTesting
     }
 
     /**
-     * Turns on the proxy server
+     * Starts the proxy in a process fork
      *
-     * @todo Can we use fork() here instead of an external script?
-     * @todo Pass a cache path to this script ($this->PROXY_CACHE_PATH)
+     * @param string $serverAddress
+     * @param string $cachePath
      */
-    protected static function startProxy()
+    protected static function startProxy($serverAddress, $cachePath)
     {
-        $root = realpath(__DIR__ . '/../../..');
-        $command = "php {$root}/test/integration/scripts/proxy.php >/dev/null &";
+        // Fork into two processes
+        $pid = pcntl_fork();
 
-        $output = $return = null;
-        exec($command, $output, $return);
-        if ($return)
+        // We are the child
+        if ($pid == 0)
         {
-            throw new \Exception(
-                "Could not start the proxy server script"
-            );
-        }
+            // Create a temp cache if required
+            $cachePath = '/tmp/proximate-tests';
+            @mkdir($cachePath);
 
-        // The proxy needs some settling down time, maybe we could add a feature into
-        // the Proximate\Client to do this better?
-        sleep(2);
+            $proxier = new FileProxy($serverAddress, $cachePath);
+            // Init a proxy without a logger
+            $proxier->
+                initServer()->
+                initFileCache(self::$CACHE_FOLDER)->
+                initProxy()->
+                getProxy()->
+                enableDebugHeaders()->
+                listenLoop();
+            exit();
+        }
+        // We are the parent
+        elseif ($pid > 0)
+        {
+            // The proxy needs some settling down time, maybe we could add a feature into
+            // the Proximate\Client to do this better?
+            sleep(2);
+        }
     }
 
     /**
@@ -71,7 +84,11 @@ trait ProxyTesting
      */
     public function clearCache($cachePath)
     {
-        foreach(glob($cachePath . '/*') as $file)
+        $proxyPath =
+            $cachePath . DIRECTORY_SEPARATOR .
+            self::$CACHE_FOLDER . DIRECTORY_SEPARATOR .
+            '*';
+        foreach(glob($proxyPath) as $file)
         {
             unlink($file);
         }
@@ -98,9 +115,9 @@ trait ProxyTesting
     /**
      * Shuts down the proxy server
      */
-    public static function stopProxy()
+    public static function stopProxy($serverAddress)
     {
-        $client = new Client(self::URL_PROXY);
+        $client = new Client($serverAddress);
         $client->fetch('SHUTDOWN');
     }
 }

@@ -39,11 +39,11 @@ class IntegrationTest extends TestCase
     {
         // First visit should be uncached
         $this->visitPage();
-        $this->assertIsLive();
+        $this->assertIsLive('A get call should not be cached');
 
         // Second visit should be cached
         $this->visitPage();
-        $this->assertIsCached();
+        $this->assertIsCached('Calling the same again should have cached it');
     }
 
     /**
@@ -52,26 +52,26 @@ class IntegrationTest extends TestCase
     public function testDoesNotCacheWhenMethodIsChanged()
     {
         $this->visitPage();
-        $this->assertIsLive();
+        $this->assertIsLive('Checks that a GET is fetched live');
 
         // If the method is changed, this is still not cached
         $this->postPage();
-        $this->assertIsLive();
+        $this->assertIsLive('Checks that a POST is fetched live, since the method has changed');
     }
 
     public function testDoesNotCacheWhenPostVarsChange()
     {
         $vars = ['A' => '1', 'B' => '2', ];
         $this->postPage($vars);
-        $this->assertIsLive();
+        $this->assertIsLive('Checks that an initial POST is fetched live');
 
         // This will be cached
         $this->postPage($vars);
-        $this->assertIsCached();
+        $this->assertIsCached('Checks that the same POST is cached');
 
         // This won't be cached, as the data is different
         $this->postPage(['A' => '1', 'B' => '3', ]);
-        $this->assertIsLive();
+        $this->assertIsLive('Checks that a new POST is fetched live');
     }
 
     protected function visitPage()
@@ -87,19 +87,21 @@ class IntegrationTest extends TestCase
         );
     }
 
-    protected function assertIsLive()
+    protected function assertIsLive($message)
     {
         $this->assertEquals(
             Proxy::RESPONSE_LIVE,
-            $this->getLastHeader(Proxy::RESPONSE_STATUS_HEADER_NAME)
+            $this->getLastHeader(Proxy::RESPONSE_STATUS_HEADER_NAME),
+            $message
         );
     }
 
-    protected function assertIsCached()
+    protected function assertIsCached($message)
     {
         $this->assertEquals(
             Proxy::RESPONSE_CACHED,
-            $this->getLastHeader(Proxy::RESPONSE_STATUS_HEADER_NAME)
+            $this->getLastHeader(Proxy::RESPONSE_STATUS_HEADER_NAME),
+            $message
         );
     }
 

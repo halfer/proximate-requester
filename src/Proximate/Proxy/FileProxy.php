@@ -16,6 +16,7 @@ use Proximate\CacheAdapter\Filesystem as FilesystemCacheAdapter;
 
 use Monolog\Logger;
 use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\StreamHandler;
 
 use Proximate\Proxy\Proxy;
 
@@ -109,7 +110,7 @@ class FileProxy
     }
 
     /**
-     * Adds a file/stdout logger to an existing proxy instance
+     * Adds a stdout logger to an existing proxy instance
      *
      * @return self
      */
@@ -117,6 +118,21 @@ class FileProxy
     {
         $logger = new Logger('stdout');
         $logger->pushHandler(new ErrorLogHandler());
+
+        $this->getProxy()->addLogger($logger);
+
+        return $this;
+    }
+
+    /**
+     * Adds a file logger to an existing proxy instance
+     *
+     * @return self
+     */
+    public function addFileLogger($file)
+    {
+        $logger = new Logger('file');
+        $logger->pushHandler(new StreamHandler($file));
 
         $this->getProxy()->addLogger($logger);
 

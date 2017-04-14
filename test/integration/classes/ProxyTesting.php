@@ -56,7 +56,6 @@ trait ProxyTesting
         if ($pid == 0)
         {
             // Create a temp cache if required
-            #$cachePath = '/tmp/proximate-tests';
             @mkdir($cachePath);
 
             $proxier = new FileProxy($serverAddress, $cachePath);
@@ -65,6 +64,7 @@ trait ProxyTesting
                 initServer()->
                 initFileCache(self::$CACHE_FOLDER)->
                 initProxy()->
+                addFileLogger('/tmp/proximate.log')->
                 getProxy()->
                 enableDebugHeaders()->
                 listenLoop();

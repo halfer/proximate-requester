@@ -21,9 +21,10 @@ use Proximate\Proxy\Proxy;
 class IntegrationTest extends TestCase
 {
     use ProxyTesting;
+    use PortChooser;
 
-    #const URL_SERVER = 'http://127.0.0.1';
-    #const URL_PROXY = 'http://127.0.0.1';
+    // @todo Use these consts as a basis for the generated URLs
+    const URL_PROXY_BASE = '127.0.0.1';
     const URL_PROXY_PORT_MIN = 35000;
     const URL_PROXY_PORT_MAX = 49999;
     const PROXY_CACHE_PATH = '/tmp/proximate-tests';
@@ -36,8 +37,6 @@ class IntegrationTest extends TestCase
      */
     public function testCachesOnSubsequentGetRequest()
     {
-        $this->getCurlClient()->setOpt(CURLOPT_PROXY, self::getProxyServerUrl()); // Move this to parent
-
         // First visit should be uncached
         $this->visitPage();
         $this->assertIsLive();
@@ -52,8 +51,6 @@ class IntegrationTest extends TestCase
      */
     public function testDoesNotCacheWhenMethodIsChanged()
     {
-        $this->getCurlClient()->setOpt(CURLOPT_PROXY, self::getProxyServerUrl()); // Move this to parent
-
         $this->visitPage();
         $this->assertIsLive();
 
@@ -92,9 +89,9 @@ class IntegrationTest extends TestCase
     {
         // Choose URLs based on random ports
         $proxyPort = self::choosePort(self::URL_PROXY_PORT_MIN, self::URL_PROXY_PORT_MAX);
-        self::$proxyUrl = '127.0.0.1:' . $proxyPort;
+        self::$proxyUrl = self::URL_PROXY_BASE . ':' . $proxyPort;
 
-        self::startProxy(self::getProxyServerUrl(), '/tmp/proximate-tests');
+        self::startProxy(self::getProxyServerUrl(), self::PROXY_CACHE_PATH);
     }
 
     public function setUp()
@@ -106,23 +103,6 @@ class IntegrationTest extends TestCase
     public static function tearDownAfterClass()
     {
         self::stopProxy(self::getProxyServerUrl());
-    }
-
-    /**
-     * Cycles through a port choice depending on the current UNIX time
-     *
-     * @todo Replicated from TestListener, need to move this to a trait
-     *
-     * @param integer $min
-     * @param integer $max
-     */
-    protected static function choosePort($min, $max)
-    {
-        $range = $max - $min + 1;
-        $mod = time() % $range;
-        $port = $min + $mod;
-
-        return $port;
     }
 
     protected function getWebServerUrl()

@@ -56,7 +56,7 @@ trait ProxyTesting
         if ($pid == 0)
         {
             // Create a temp cache if required
-            $cachePath = '/tmp/proximate-tests';
+            #$cachePath = '/tmp/proximate-tests';
             @mkdir($cachePath);
 
             $proxier = new FileProxy($serverAddress, $cachePath);
@@ -100,6 +100,7 @@ trait ProxyTesting
     public function initCurl()
     {
         $this->curlClient = new Curl();
+        $this->getCurlClient()->setOpt(CURLOPT_PROXY, self::getProxyServerUrl());
     }
 
     /**

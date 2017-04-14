@@ -1,6 +1,8 @@
 Proximate/Requester
 ===
 
+[![Build Status](https://api.travis-ci.org/halfer/proximate-requester.svg)](https://travis-ci.org/halfer/proximate-requester)
+
 Introduction
 ---
 

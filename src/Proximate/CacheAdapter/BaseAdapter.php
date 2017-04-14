@@ -120,8 +120,11 @@ abstract class BaseAdapter
     public function createCacheKey($request, $realUrl)
     {
         $method = $this->getMethodFromProxyRequest($request);
+        $body = ($method == 'POST') ?
+            $this->getBodyFromRequest($request) :
+            '';
 
-        return sha1($method . $realUrl);
+        return sha1($method . $body . $realUrl);
     }
 
     /**

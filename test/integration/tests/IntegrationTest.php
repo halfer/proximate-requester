@@ -59,14 +59,32 @@ class IntegrationTest extends TestCase
         $this->assertIsLive();
     }
 
+    public function testDoesNotCacheWhenPostVarsChange()
+    {
+        $vars = ['A' => '1', 'B' => '2', ];
+        $this->postPage($vars);
+        $this->assertIsLive();
+
+        // This will be cached
+        $this->postPage($vars);
+        $this->assertIsCached();
+
+        // This won't be cached, as the data is different
+        $this->postPage(['A' => '1', 'B' => '3', ]);
+        $this->assertIsLive();
+    }
+
     protected function visitPage()
     {
         return $this->getCurlClient()->get($this->getWebServerUrl() . '/test.html');
     }
 
-    protected function postPage()
+    protected function postPage(array $data = [])
     {
-        return $this->getCurlClient()->post($this->getWebServerUrl() . '/test.html');
+        return $this->getCurlClient()->post(
+            $this->getWebServerUrl() . '/test.html',
+            $data
+        );
     }
 
     protected function assertIsLive()

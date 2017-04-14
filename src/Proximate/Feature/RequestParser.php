@@ -48,4 +48,20 @@ trait RequestParser
 
         return $element;
     }
+
+    /**
+     * Gets the body section from the output
+     *
+     * @todo Copied from ResponseParser, can these be shared?
+     *
+     * @param string $request
+     * @return string
+     */
+    protected function getBodyFromRequest($request)
+    {
+        $sections = explode("\r\n\r\n", $request, 2);
+        $body = $sections[1];
+
+        return $body;
+    }
 }

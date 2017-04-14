@@ -233,7 +233,7 @@ class Proxy
             else
             {
                 $targetSiteData = $this->getFailureResponse();
-           }
+            }
         }
 
         // Inject proxy metadata if it is requested

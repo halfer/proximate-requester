@@ -98,6 +98,12 @@ of a local proxy is apparent with the recursive fetcher: on a slow connection wh
 are fetched in as many seconds, running it a second time usually results in a run time of
 around 0.3 sec!
 
+Dependencies
+---
+
+When running the tests, there is a dependency on PHPUnit 6, which requires PHP 7.0. However,
+if you're just using Requester via Composer, the minimum version of PHP is 5.6.
+
 Status
 ---
 

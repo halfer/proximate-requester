@@ -136,8 +136,8 @@ Related packages
 Requester is designed to sit alongside other packages I have written (or are planned). These are
 all implemented as Docker applications, so that any part can be swapped out as required:
 
-* Proximate/Proxy - an implementation of the proxy class, using the file cache, sitting on a
-Docker host volume. This is pretty much written already.
+* [Proximate/Proxy](https://github.com/halfer/proximate-proxy) - an implementation of the
+proxy class, using the file cache, sitting on a Docker host volume.
 * [Proximate/Crawler](https://github.com/halfer/proximate-crawler) - some glue classes that
 connect Spatie\Crawler to a Proximate proxy instance.
 * Proximate/API - an HTTP API that uses the Requester library to offer a queryable interface

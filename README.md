@@ -86,7 +86,8 @@ before. To do this, it must convert a request (the method line plus the headers)
 which is then used as a key to load and save items in the cache.
 
 There is a default hashing algorithm in `BaseAdapter`, but this can be overrided in a descendent
-class. The default just takes the method and the real URL into account.
+class. The default just takes the method, the real URL and (for POST operations) the posted
+variables into account.
 
 Client usage
 ---
@@ -100,9 +101,8 @@ around 0.3 sec!
 Status
 ---
 
-The library is working at present and unit tests are in the process of being written. Integration
-tests will follow, as will a build process on Travis CI. If there is community interest, the
-library will be published to Packagist.
+The library is working at present, and it has some unit and integration tests. There's a build
+process on Travis CI. If there is community interest, the library will be published to Packagist.
 
 There is no stable release as yet.
 
@@ -111,8 +111,9 @@ There is no license yet, but it will be F/OSS friendly.
 Planned future enhancements
 ---
 
-* Functional tests to check the proxy serves the correct results in a variety of situations.
-* When hashing a POST request, POST variables should be taken into account.
+* Request variables should probably be taken into account for all non-GET operations, not
+just POST. This can trivially be added by a library client, but it should probably be the
+default.
 * The fetcher currently uses raw cURL, but this will probably be swapped to
 [a wrapper library](https://github.com/php-mod/curl) instead, to improve testability.
 * Support for releases of Guzzle older than version 6.

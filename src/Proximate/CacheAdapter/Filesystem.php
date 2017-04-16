@@ -44,11 +44,18 @@ class Filesystem extends BaseAdapter
      *
      * If the cache might get big, we could swap this for a generator, to conserve memory?
      *
+     * (See FilesystemTest::dummyKey() to see the format of each array entry.)
+     *
      * @return array
      */
     protected function getCacheKeys()
     {
-        return $this->getFlysystemAdapter()->listContents($this->folder);
+        $contents = $this->getFlysystemAdapter()->listContents($this->folder);
+
+        return array_map(
+            function($v) { return $v['filename']; },
+            $contents
+        );
     }
 
     /**

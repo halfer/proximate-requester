@@ -24,21 +24,24 @@ class FilesystemTest extends TestCase
 
     public function testCountCacheItems()
     {
-        $cacheKeys = $this->getSmallCacheKeySet();
+        $cacheKeys = $this->getSmallListContents();
         $this->setCacheListExpectation($cacheKeys);
         $this->assertEquals(count($cacheKeys), $this->getCacheAdapter()->countCacheItems());
     }
 
     public function testGetAllCacheKeys()
     {
-        $cacheKeys = $this->getSmallCacheKeySet();
+        $cacheKeys = $this->getSmallListContents();
         $this->setCacheListExpectation($cacheKeys);
-        $this->assertEquals($cacheKeys, $this->getCacheAdapter()->getPageOfCacheKeys(1, 10));
+        $this->assertEquals(
+            [1, 2, 3, ],
+            $this->getCacheAdapter()->getPageOfCacheKeys(1, 10)
+        );
     }
 
-    protected function getSmallCacheKeySet()
+    protected function getSmallListContents()
     {
-        return [1, 2, 3, ];
+        return $this->getListContents(3);
     }
 
     /**
@@ -50,7 +53,7 @@ class FilesystemTest extends TestCase
      */
     public function testPagination($page, array $expectedResult)
     {
-        $cacheKeys = $this->getLargeCacheKeySet();
+        $cacheKeys = $this->getLargeListContents();
         $this->setCacheListExpectation($cacheKeys);
         $this->assertEquals(
             $expectedResult,
@@ -60,7 +63,7 @@ class FilesystemTest extends TestCase
 
     public function testGetCacheItems()
     {
-        $cacheKeys = $this->getSmallCacheKeySet();
+        $cacheKeys = $this->getSmallListContents();
         $this->setCacheListExpectation($cacheKeys);
 
         // Set up mock for cache pool
@@ -68,7 +71,7 @@ class FilesystemTest extends TestCase
         $cachePool = $this->getMockedCache();
         $cachePool->
             shouldReceive('getItems')->
-            with($cacheKeys)->
+            with([1, 2, 3, ])->
             andReturn($cacheItems);
 
         $result = $this->
@@ -87,9 +90,9 @@ class FilesystemTest extends TestCase
         ];
     }
 
-    protected function getLargeCacheKeySet()
+    protected function getLargeListContents() // rename to list contents
     {
-        return [1, 2, 3, 4, 5, 6, 7, ];
+        return $this->getListContents(7);
     }
 
     public function testConvertResponseToCache()
@@ -209,6 +212,30 @@ class FilesystemTest extends TestCase
             shouldReceive('listContents')->
             with('cache')->
             andReturn($cacheKeys);
+    }
+
+    protected function getListContents($limit)
+    {
+        $listContents = [];
+        for($i = 1; $i <= $limit; $i++)
+        {
+            $listContents[] = $this->dummyKey($i);
+        }
+
+        return $listContents;
+    }
+
+    protected function dummyKey($hash)
+    {
+        return [
+            'type' => 'file',
+            'path' => 'cache/' . $hash,
+            'timestamp' => 1491643670,
+            'size' => 15286,
+            'dirname' => 'cache',
+            'basename' => $hash,
+            'filename' => $hash,
+        ];
     }
 
     protected function getMockedFlysystem()

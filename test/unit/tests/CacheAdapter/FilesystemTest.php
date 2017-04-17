@@ -61,16 +61,36 @@ class FilesystemTest extends TestCase
         );
     }
 
-    public function testGetCacheItems()
+    public function testGetCacheItemsWithResponse()
+    {
+        $expectedResult = [
+            ['response' => 'Item 1', 'url' => 'proto://hello1', ],
+            ['response' => 'Item 2', 'url' => 'proto://hello2', ],
+            ['response' => 'Item 3', 'url' => 'proto://hello3', ],
+        ];
+        $this->checkGetCacheItems(true, $expectedResult);
+    }
+
+    public function testGetCacheItemsWithoutResponse()
+    {
+        $expectedResult = [
+            ['url' => 'proto://hello1', ],
+            ['url' => 'proto://hello2', ],
+            ['url' => 'proto://hello3', ],
+        ];
+        $this->checkGetCacheItems(false, $expectedResult);
+    }
+
+    protected function checkGetCacheItems($withResponse, array $expectedResult)
     {
         $cacheKeys = $this->getSmallListContents();
         $this->setCacheListExpectation($cacheKeys);
 
         // Set up mock for cache pool
         $cacheItems = [
-            ['response' => 'Item 1'],
-            ['response' => 'Item 2'],
-            ['response' => 'Item 3'],
+            ['response' => 'Item 1', 'url' => 'proto://hello1', ],
+            ['response' => 'Item 2', 'url' => 'proto://hello2', ],
+            ['response' => 'Item 3', 'url' => 'proto://hello3', ],
         ];
         $cachePool = $this->getMockedCache();
         $cachePool->
@@ -81,8 +101,8 @@ class FilesystemTest extends TestCase
         $result = $this->
             getCacheAdapter()->
             setCacheItemPoolInterface($cachePool)->
-            getPageOfCacheItems(1, count($cacheItems), true);
-        $this->assertEquals($cacheItems, $result);
+            getPageOfCacheItems(1, count($cacheItems), $withResponse);
+        $this->assertEquals($expectedResult, $result);
     }
 
     protected function convertArrayToCacheItems($list)

@@ -68,15 +68,30 @@ abstract class BaseAdapter
     /**
      * Returns a traversable set of cache items
      *
-     * @param CacheItemPoolInterface $cachePool
      * @param integer $pageNo
      * @param integer $itemsPerPage
+     * @oaram boolean $includeResponse
      * @return array
      */
-    public function getPageOfCacheItems($pageNo, $itemsPerPage)
+    public function getPageOfCacheItems($pageNo, $itemsPerPage, $includeResponse = false)
     {
         $keys = $this->getPageOfCacheKeys($pageNo, $itemsPerPage);
-        $items = $this->getCacheItemPoolInterface()->getItems($keys);
+        $cacheItems = $this->getCacheItemPoolInterface()->getItems($keys);
+
+        // Convert the array of CacheItems to an array of arrays
+        $items = [];
+        /* @var $cacheItem \Cache\Adapter\Common\CacheItem */
+        foreach ($cacheItems as $cacheItem)
+        {
+            if ($item = $cacheItem->get())
+            {
+                if (!$includeResponse)
+                {
+                    unset($item['response']);
+                }
+                $items[] = $item;
+            }
+        }
 
         return $items;
     }

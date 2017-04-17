@@ -67,18 +67,37 @@ class FilesystemTest extends TestCase
         $this->setCacheListExpectation($cacheKeys);
 
         // Set up mock for cache pool
-        $cacheItems = ['Item 1', 'Item 2', 'Item 3', ];
+        $cacheItems = [
+            ['response' => 'Item 1'],
+            ['response' => 'Item 2'],
+            ['response' => 'Item 3'],
+        ];
         $cachePool = $this->getMockedCache();
         $cachePool->
             shouldReceive('getItems')->
             with([1, 2, 3, ])->
-            andReturn($cacheItems);
+            andReturn($this->convertArrayToCacheItems($cacheItems));
 
         $result = $this->
             getCacheAdapter()->
             setCacheItemPoolInterface($cachePool)->
-            getPageOfCacheItems(1, count($cacheItems));
+            getPageOfCacheItems(1, count($cacheItems), true);
         $this->assertEquals($cacheItems, $result);
+    }
+
+    protected function convertArrayToCacheItems($list)
+    {
+        $array = [];
+        foreach ($list as $listItem)
+        {
+            $cacheItem = Mockery::mock(CacheItem::class);
+            $cacheItem->
+                shouldReceive('get')->
+                andReturn($listItem);
+            $array[] = $cacheItem;
+        }
+
+        return $array;
     }
 
     public function paginationDataProvider()

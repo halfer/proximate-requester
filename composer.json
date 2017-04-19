@@ -6,7 +6,8 @@
         "monolog/monolog": "^1.22",
         "psr/cache": "^1.0",
         "cache/filesystem-adapter": "^0.4.0",
-        "proximate/core": "dev-master"
+        "proximate/core": "dev-master",
+        "proximate/storage": "dev-master"
     },
     "autoload": {
       "psr-0" : {
@@ -28,6 +29,10 @@
       {
         "type": "vcs",
         "url":  "https://github.com/halfer/proximate-core.git"
+      },
+      {
+        "type": "vcs",
+        "url":  "https://github.com/halfer/proximate-storage.git"
       }
     ]
 }

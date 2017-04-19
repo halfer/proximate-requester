@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "400702f84a8243ca7e47aeaf44a4cfe9",
-    "content-hash": "11463b98515026dcf981a7abf8320366",
+    "hash": "b71f3c874bd108e2c5519025185c33ea",
+    "content-hash": "a475d1dd23509778dfcdc42742abfff9",
     "packages": [
         {
             "name": "cache/adapter-common",
@@ -431,6 +431,41 @@
             "time": "2017-04-19 16:32:45"
         },
         {
+            "name": "proximate/storage",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/halfer/proximate-storage.git",
+                "reference": "5a2cc816e3f508fa5f73f7e5fb85018c888e55c4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/halfer/proximate-storage/zipball/5a2cc816e3f508fa5f73f7e5fb85018c888e55c4",
+                "reference": "5a2cc816e3f508fa5f73f7e5fb85018c888e55c4",
+                "shasum": ""
+            },
+            "require": {
+                "cache/filesystem-adapter": "^0.4.0",
+                "proximate/core": "dev-master",
+                "psr/cache": "^1.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "1.0.0-alpha1",
+                "phpunit/phpunit": "^6.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Proximate": "src/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/halfer/proximate-storage/tree/master",
+                "issues": "https://github.com/halfer/proximate-storage/issues"
+            },
+            "time": "2017-04-19 20:43:30"
+        },
+        {
             "name": "psr/cache",
             "version": "1.0.1",
             "source": {
@@ -782,12 +817,12 @@
             "version": "1.0.0-alpha1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/padraic/mockery.git",
+                "url": "https://github.com/mockery/mockery.git",
                 "reference": "0b23f71799b3e43406f4ce7fef112ac3f0b7a385"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/0b23f71799b3e43406f4ce7fef112ac3f0b7a385",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/0b23f71799b3e43406f4ce7fef112ac3f0b7a385",
                 "reference": "0b23f71799b3e43406f4ce7fef112ac3f0b7a385",
                 "shasum": ""
             },
@@ -2378,6 +2413,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "proximate/core": 20,
+        "proximate/storage": 20,
         "mockery/mockery": 15,
         "halfer/spiderling-utils": 20,
         "openbuildings/phpunit-spiderling": 5

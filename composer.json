@@ -5,7 +5,8 @@
         "psr/log": "^1.0",
         "monolog/monolog": "^1.22",
         "psr/cache": "^1.0",
-        "cache/filesystem-adapter": "^0.4.0"
+        "cache/filesystem-adapter": "^0.4.0",
+        "proximate/core": "dev-master"
     },
     "autoload": {
       "psr-0" : {
@@ -23,6 +24,10 @@
       {
         "type": "vcs",
         "url":  "https://github.com/halfer/spiderling-utils.git"
+      },
+      {
+        "type": "vcs",
+        "url":  "https://github.com/halfer/proximate-core.git"
       }
     ]
 }

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "74e75f6225ee4344bf5336efc7fbe8c3",
-    "content-hash": "60176f50d9b5189e11dfad3460ce87b0",
+    "hash": "400702f84a8243ca7e47aeaf44a4cfe9",
+    "content-hash": "11463b98515026dcf981a7abf8320366",
     "packages": [
         {
             "name": "cache/adapter-common",
@@ -403,6 +403,32 @@
                 "psr-3"
             ],
             "time": "2017-03-13 07:08:03"
+        },
+        {
+            "name": "proximate/core",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/halfer/proximate-core.git",
+                "reference": "66a531251619e01228e94cd7340b86968ab6d681"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/halfer/proximate-core/zipball/66a531251619e01228e94cd7340b86968ab6d681",
+                "reference": "66a531251619e01228e94cd7340b86968ab6d681",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Proximate": "src/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/halfer/proximate-core/tree/master",
+                "issues": "https://github.com/halfer/proximate-core/issues"
+            },
+            "time": "2017-04-19 16:32:45"
         },
         {
             "name": "psr/cache",
@@ -2351,6 +2377,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "proximate/core": 20,
         "mockery/mockery": 15,
         "halfer/spiderling-utils": 20,
         "openbuildings/phpunit-spiderling": 5

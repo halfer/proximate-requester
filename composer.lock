@@ -410,12 +410,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/halfer/proximate-core.git",
-                "reference": "66a531251619e01228e94cd7340b86968ab6d681"
+                "reference": "f0170294f50a8a0d5197ff8ef538f9b9a2fea2ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/halfer/proximate-core/zipball/66a531251619e01228e94cd7340b86968ab6d681",
-                "reference": "66a531251619e01228e94cd7340b86968ab6d681",
+                "url": "https://api.github.com/repos/halfer/proximate-core/zipball/f0170294f50a8a0d5197ff8ef538f9b9a2fea2ef",
+                "reference": "f0170294f50a8a0d5197ff8ef538f9b9a2fea2ef",
                 "shasum": ""
             },
             "type": "library",
@@ -428,7 +428,7 @@
                 "source": "https://github.com/halfer/proximate-core/tree/master",
                 "issues": "https://github.com/halfer/proximate-core/issues"
             },
-            "time": "2017-04-19 16:32:45"
+            "time": "2017-04-19 20:46:04"
         },
         {
             "name": "proximate/storage",

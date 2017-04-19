@@ -12,7 +12,7 @@ namespace Proximate\Proxy;
 
 use Socket\Raw\Socket;
 use Psr\Cache\CacheItemPoolInterface;
-use Proximate\CacheAdapter\BaseAdapter as CacheAdapter;
+use Proximate\Storage\BaseAdapter as CacheAdapter;
 use Proximate\Exception\Init as InitException;
 use Monolog\Logger;
 

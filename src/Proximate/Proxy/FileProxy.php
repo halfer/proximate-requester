@@ -12,7 +12,7 @@ use League\Flysystem\Adapter\Local as LocalFileAdapter;
 use League\Flysystem\Filesystem;
 use Cache\Adapter\Filesystem\FilesystemCachePool;
 
-use Proximate\CacheAdapter\Filesystem as FilesystemCacheAdapter;
+use Proximate\Storage\Filesystem as FilesystemCacheAdapter;
 
 use Monolog\Logger;
 use Monolog\Handler\ErrorLogHandler;

@@ -150,7 +150,7 @@ to the proxy's cache contents. Items can be retrieved in paginated form, individ
 New URLs can be added to a crawl queue too.
 * Proximate/App - a simple web app that talks to the API to request scrapes, to browse and delete
 the proxy contents.
-* [Proximate\Storage](https://github.com/halfer/proximate-storage) - classes to store
+* [Proximate/Storage](https://github.com/halfer/proximate-storage) - classes to store
 proxied data in a cache service.
-* [Proximate\Core](https://github.com/halfer/proximate-core) - shared classes for various
+* [Proximate/Core](https://github.com/halfer/proximate-core) - shared classes for various
 Proximate subsystems.

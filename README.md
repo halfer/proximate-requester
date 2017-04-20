@@ -69,7 +69,7 @@ various classes are set up. You will need:
 
 * A `Socket\Raw\Socket` for listening
 * A PSR-6 compatible cache adapter, e.g. `Cache\Adapter\Filesystem\FilesystemCachePool`
-* A child of `Proximate\CacheAdapter\BaseAdapter` for Proximate-specific cache operations. This
+* A child of `Proximate\Storage\BaseAdapter` for Proximate-specific cache operations. This
 includes creating cache keys (hashes), fetching pages of cache keys, fetching pages of cache
 entries, converting between raw responses and cache entries.
 * An instance (or a child of) `Proximate\Proxy` to do the listening

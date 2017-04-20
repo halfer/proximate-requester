@@ -1,5 +1,6 @@
 {
-    "name": "halferbits/proximate-requester",
+    "name": "proximate/requester",
+    "description": "Proximate/Requester is a set of PHP classes to build an playback-record HTTP proxy",
     "require": {
         "clue/socket-raw": "^1.2",
         "psr/log": "^1.0",
@@ -10,9 +11,9 @@
         "proximate/storage": "dev-master"
     },
     "autoload": {
-      "psr-0" : {
-        "Proximate": "src/"
-      }
+        "psr-0": {
+            "Proximate": "src/"
+        }
     },
     "require-dev": {
         "mockery/mockery": "1.0.0-alpha1",
@@ -22,17 +23,17 @@
         "curl/curl": "^1.6"
     },
     "repositories": [
-      {
-        "type": "vcs",
-        "url":  "https://github.com/halfer/spiderling-utils.git"
-      },
-      {
-        "type": "vcs",
-        "url":  "https://github.com/halfer/proximate-core.git"
-      },
-      {
-        "type": "vcs",
-        "url":  "https://github.com/halfer/proximate-storage.git"
-      }
+        {
+            "type": "vcs",
+            "url": "https://github.com/halfer/spiderling-utils.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/halfer/proximate-core.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/halfer/proximate-storage.git"
+        }
     ]
 }

@@ -1,7 +1,14 @@
 Proximate/Requester
 ===
 
-[![Build Status](https://api.travis-ci.org/halfer/proximate-requester.svg)](https://travis-ci.org/halfer/proximate-requester)
+[![Build Status](https://travis-ci.org/halfer/proximate-requester.svg?branch=master)](https://travis-ci.org/halfer/proximate-requester)
+
+Downstream Proximate build statuses:
+
+| Subsystem  | Status |
+| ---------- | ------ |
+| Proximate/Storage  | [![Build Status](https://travis-ci.org/halfer/proximate-storage.svg?branch=master)](https://travis-ci.org/halfer/proximate-storage)  |
+| Proximate/Crawler  | [![Build Status](https://travis-ci.org/halfer/proximate-crawler.svg?branch=master)](https://travis-ci.org/halfer/proximate-crawler)  |
 
 Introduction
 ---

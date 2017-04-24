@@ -27,8 +27,7 @@ class IntegrationTest extends TestCase
     const URL_PROXY_BASE = '127.0.0.1';
     const URL_PROXY_PORT_MIN = 35000;
     const URL_PROXY_PORT_MAX = 49999;
-    const PROXY_CACHE_PATH = '/tmp/proximate-tests';
-    const PROXY_CACHE_FOLDER = 'cache';
+    const PROXY_CACHE_PATH = '/tmp/proximate-tests/cache';
 
     protected static $proxyUrl;
 

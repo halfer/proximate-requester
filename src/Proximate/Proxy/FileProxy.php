@@ -44,14 +44,13 @@ class FileProxy
      * class, or a caller can just directly call the methods it wishes (e.g. to remove the
      * logger).
      *
-     * @param string $folder The sub-folder name in which cache items are stored
      * @return self
      */
-    public function initSimpleSystem($folder = 'cache')
+    public function initSimpleSystem()
     {
         return $this->
             initServer()->
-            initFileCache($folder)->
+            initFileCache()->
             initProxy()->
             addStdoutLogger();
     }
@@ -72,19 +71,22 @@ class FileProxy
     /**
      * Initialises the file cache
      *
-     * @param string $folder The sub-folder name in which cache items are stored
      * @return self
      */
-    public function initFileCache($folder = 'cache')
+    public function initFileCache()
     {
+        // Get the parent dir and the leaf name
+        $baseDir = dirname($this->rootPath);
+        $leafDir = basename($this->rootPath);
+
         // This sets up the cache storage system
-        $filesystemAdapter = new LocalFileAdapter($this->rootPath);
+        $filesystemAdapter = new LocalFileAdapter($baseDir);
         $filesystem = new Filesystem($filesystemAdapter);
-        $this->cachePool = new FilesystemCachePool($filesystem, $folder);
+        $this->cachePool = new FilesystemCachePool($filesystem, $leafDir);
 
         // Here is a dependency to perform additional ops on the cache
         $this->cacheAdapter = new FilesystemCacheAdapter($filesystem);
-        $this->cacheAdapter->setCacheFolder($folder);
+        $this->cacheAdapter->setCacheFolder($leafDir);
 
         return $this;
     }

@@ -13,7 +13,6 @@ use Proximate\Client;
 trait ProxyTesting
 {
     protected $curlClient;
-    protected static $CACHE_FOLDER = 'cache';
 
     /**
      * Gets the value of the requested header from the last HTTP operation
@@ -62,7 +61,7 @@ trait ProxyTesting
             // Init a proxy without a logger
             $proxier->
                 initServer()->
-                initFileCache(self::$CACHE_FOLDER)->
+                initFileCache()->
                 initProxy()->
                 addFileLogger('/tmp/proximate.log')->
                 getProxy()->
@@ -84,11 +83,7 @@ trait ProxyTesting
      */
     public function clearCache($cachePath)
     {
-        $proxyPath =
-            $cachePath . DIRECTORY_SEPARATOR .
-            self::$CACHE_FOLDER . DIRECTORY_SEPARATOR .
-            '*';
-        foreach(glob($proxyPath) as $file)
+        foreach(glob($cachePath . DIRECTORY_SEPARATOR . '*') as $file)
         {
             unlink($file);
         }

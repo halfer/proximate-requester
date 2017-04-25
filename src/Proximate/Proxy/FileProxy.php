@@ -75,18 +75,10 @@ class FileProxy
      */
     public function initFileCache()
     {
-        // Get the parent dir and the leaf name
-        $baseDir = dirname($this->rootPath);
-        $leafDir = basename($this->rootPath);
-
-        // This sets up the cache storage system
-        $filesystemAdapter = new LocalFileAdapter($baseDir);
-        $filesystem = new Filesystem($filesystemAdapter);
-        $this->cachePool = new FilesystemCachePool($filesystem, $leafDir);
-
-        // Here is a dependency to perform additional ops on the cache
-        $this->cacheAdapter = new FilesystemCacheAdapter($filesystem);
-        $this->cacheAdapter->setCacheFolder($leafDir);
+        $factory = new \Proximate\Storage\FilecacheFactory($this->rootPath);
+        $factory->init();
+        $this->cachePool = $factory->getCachePool();
+        $this->cacheAdapter = $factory->getCacheAdapter();
 
         return $this;
     }
@@ -151,6 +143,11 @@ class FileProxy
         return $this->socketServer;
     }
 
+    /**
+     * Gets the cache pool
+     *
+     * @return FilesystemCachePool
+     */
     public function getCachePool()
     {
         if (!$this->cachePool)

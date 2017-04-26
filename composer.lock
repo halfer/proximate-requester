@@ -245,16 +245,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.38",
+            "version": "1.0.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "4ba6e13f5116204b21c3afdf400ecf2b9eb1c482"
+                "reference": "2474325ee924134bb05848663b12531f6f2e9fbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/4ba6e13f5116204b21c3afdf400ecf2b9eb1c482",
-                "reference": "4ba6e13f5116204b21c3afdf400ecf2b9eb1c482",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/2474325ee924134bb05848663b12531f6f2e9fbe",
+                "reference": "2474325ee924134bb05848663b12531f6f2e9fbe",
                 "shasum": ""
             },
             "require": {
@@ -324,7 +324,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2017-04-22 18:59:19"
+            "time": "2017-04-25 15:24:43"
         },
         {
             "name": "monolog/monolog",
@@ -437,12 +437,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/halfer/proximate-storage.git",
-                "reference": "eb9aa6b7ee4cc66b618a3bfae5c5f39923dc69cf"
+                "reference": "4f36be60ff34dfde1119c173fe451a4c44d8fde6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/halfer/proximate-storage/zipball/eb9aa6b7ee4cc66b618a3bfae5c5f39923dc69cf",
-                "reference": "eb9aa6b7ee4cc66b618a3bfae5c5f39923dc69cf",
+                "url": "https://api.github.com/repos/halfer/proximate-storage/zipball/4f36be60ff34dfde1119c173fe451a4c44d8fde6",
+                "reference": "4f36be60ff34dfde1119c173fe451a4c44d8fde6",
                 "shasum": ""
             },
             "require": {
@@ -465,7 +465,7 @@
                 "source": "https://github.com/halfer/proximate-storage/tree/master",
                 "issues": "https://github.com/halfer/proximate-storage/issues"
             },
-            "time": "2017-04-25 13:56:26"
+            "time": "2017-04-25 16:53:07"
         },
         {
             "name": "psr/cache",

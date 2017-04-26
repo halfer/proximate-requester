@@ -7,6 +7,7 @@ Downstream Proximate build statuses:
 
 | Subsystem  | Status |
 | ---------- | ------ |
+| Proximate/Api      | [![Build Status](https://travis-ci.org/halfer/proximate-api.svg?branch=master)](https://travis-ci.org/halfer/proximate-api)          |
 | Proximate/Storage  | [![Build Status](https://travis-ci.org/halfer/proximate-storage.svg?branch=master)](https://travis-ci.org/halfer/proximate-storage)  |
 | Proximate/Crawler  | [![Build Status](https://travis-ci.org/halfer/proximate-crawler.svg?branch=master)](https://travis-ci.org/halfer/proximate-crawler)  |
 

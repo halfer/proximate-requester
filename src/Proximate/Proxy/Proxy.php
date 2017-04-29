@@ -28,6 +28,9 @@ class Proxy
     const RESPONSE_CACHED = 'From-Cache';
     const RESPONSE_LIVE = 'From-Live';
 
+    const RESPONSE_500 = "HTTP/1.1 500 Server error\r\n\r\n";
+    const RESPONSE_408 = "HTTP/1.1 408 Request Timeout\r\n\r\n";
+
     protected $server;
     protected $client;
     protected $cachePool;
@@ -349,12 +352,12 @@ class Proxy
         if ($this->lastCurlError === 28)
         {
             $logMessage = "Timeout when trying to load requested site";
-            $httpResponse = "HTTP/1.1 408 Request Timeout\r\n\r\n";
+            $httpResponse = self::RESPONSE_408;
         }
         else
         {
             $logMessage = "Failed to load requested site";
-            $httpResponse = "HTTP/1.1 500 Server error\r\n\r\n";
+            $httpResponse = self::RESPONSE_500;
         }
 
         $this->log($logMessage, Logger::ERROR);
@@ -378,6 +381,8 @@ class Proxy
                 CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
                 CURLOPT_FOLLOWLOCATION => 0,
                 CURLOPT_WRITEFUNCTION => [$this, 'outputToBuffer'],
+                CURLOPT_CONNECTTIMEOUT => 3,
+                CURLOPT_TIMEOUT => 7,
             ];
     }
 

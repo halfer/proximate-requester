@@ -151,6 +151,11 @@ class Client
         if ($proxy)
         {
             $extraOpts[CURLOPT_PROXY] = $this->proxyUrl;
+            // The proxy uses 3 and 7 for these timeout values, we need to take longer
+            // so that our timeout does not expire before the proxy's does
+            $extraOpts[CURLOPT_CONNECTTIMEOUT] = 5;
+            $extraOpts[CURLOPT_TIMEOUT] = 10;
+
         }
 
         return $this->getCurlOpts($method, $data) + $extraOpts;

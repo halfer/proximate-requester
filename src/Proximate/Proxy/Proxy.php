@@ -37,6 +37,7 @@ class Proxy
     protected $writeBuffer;
     protected $realUrlHeaderName = self::REAL_URL_HEADER_NAME;
     protected $debugHeaders = false;
+    protected $lastCurlError = null;
 
     public function __construct(Socket $serverSocket, CacheItemPoolInterface $cachePool, CacheAdapter $cacheAdapter)
     {
@@ -286,10 +287,12 @@ class Proxy
         $result = curl_exec($curl);
 
         if ($result === false) {
+            $this->lastCurlError = curl_errno($curl);
             $this->log(
                 sprintf(
-                    "Fetch error: %s\n",
-                    curl_strerror(curl_errno($curl))
+                    "Fetch error: %s (%d)\n",
+                    curl_strerror($this->lastCurlError),
+                    $this->lastCurlError
                 ),
                 Logger::ERROR
             );
@@ -342,10 +345,21 @@ class Proxy
     // Is there a better way to handle an error condition?
     protected function getFailureResponse()
     {
-        $this->log("Failed to load requested site", Logger::ERROR);
-        $targetSiteData = "HTTP/1.1 500 Server error\r\n\r\n";
+        // Special rules for timeout
+        if ($this->lastCurlError === 28)
+        {
+            $logMessage = "Timeout when trying to load requested site";
+            $httpResponse = "HTTP/1.1 408 Request Timeout\r\n\r\n";
+        }
+        else
+        {
+            $logMessage = "Failed to load requested site";
+            $httpResponse = "HTTP/1.1 500 Server error\r\n\r\n";
+        }
 
-        return $targetSiteData;
+        $this->log($logMessage, Logger::ERROR);
+
+        return $httpResponse;
     }
 
     /**

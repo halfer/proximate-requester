@@ -12,7 +12,6 @@ use Proximate\Storage\FilecacheFactory;
 use Cache\Adapter\Filesystem\FilesystemCachePool;
 
 use Monolog\Logger;
-use Monolog\Handler\ErrorLogHandler;
 use Monolog\Handler\StreamHandler;
 
 use Proximate\Proxy\Proxy;
@@ -109,7 +108,7 @@ class FileProxy
     public function addStdoutLogger()
     {
         $logger = new Logger('stdout');
-        $logger->pushHandler(new ErrorLogHandler());
+        $logger->pushHandler(new StreamHandler("php://stdout"));
 
         $this->getProxy()->setLogger($logger);
 

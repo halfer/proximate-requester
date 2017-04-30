@@ -11,7 +11,7 @@ use Proximate\Proxy\FileProxy;
 
 try
 {
-    $proxier = new FileProxy('localhost:8081', $rootPath . '/cache');
+    $proxier = new FileProxy('localhost:8081', $rootPath . '/cache/data');
     $proxier->
         initSimpleSystem()->
         getProxy()->

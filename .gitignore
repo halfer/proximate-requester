@@ -5,5 +5,6 @@ vendor/
 # Ignore IDE
 nbproject/
 
-# Ignore local cache folder
+# Ignore local cache/queue folders/symlinks
 cache/
+queue/

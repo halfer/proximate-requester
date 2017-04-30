@@ -110,7 +110,7 @@ class FileProxy
         $logger = new Logger('stdout');
         $logger->pushHandler(new ErrorLogHandler());
 
-        $this->getProxy()->addLogger($logger);
+        $this->getProxy()->setLogger($logger);
 
         return $this;
     }
@@ -125,7 +125,7 @@ class FileProxy
         $logger = new Logger('file');
         $logger->pushHandler(new StreamHandler($file));
 
-        $this->getProxy()->addLogger($logger);
+        $this->getProxy()->setLogger($logger);
 
         return $this;
     }

@@ -19,11 +19,21 @@ trait Logger
      * @param LoggerInterface $logger
      * @return $this
      */
-    public function addLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
 
         return $this;
+    }
+
+    /**
+     * Gets the current logger or null if one is not set
+     *
+     * @return LoggerInterface
+     */
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
     /**

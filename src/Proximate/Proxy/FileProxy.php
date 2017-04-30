@@ -49,7 +49,8 @@ class FileProxy
             initServer()->
             initFileCache()->
             initProxy()->
-            addStdoutLogger();
+            addStdoutLogger()->
+            renderStartupMessage();
     }
 
     /**
@@ -126,6 +127,15 @@ class FileProxy
         $logger->pushHandler(new StreamHandler($file));
 
         $this->getProxy()->setLogger($logger);
+
+        return $this;
+    }
+
+    public function renderStartupMessage()
+    {
+        $this->getProxy()->getLogger()->info(
+            sprintf("Setting up queue at `%s`", $this->rootPath)
+        );
 
         return $this;
     }

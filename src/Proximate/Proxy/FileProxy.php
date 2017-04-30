@@ -8,11 +8,8 @@ namespace Proximate\Proxy;
 
 use Socket\Raw\Factory as SocketFactory;
 
-use League\Flysystem\Adapter\Local as LocalFileAdapter;
-use League\Flysystem\Filesystem;
+use Proximate\Storage\FilecacheFactory;
 use Cache\Adapter\Filesystem\FilesystemCachePool;
-
-use Proximate\Storage\Filesystem as FilesystemCacheAdapter;
 
 use Monolog\Logger;
 use Monolog\Handler\ErrorLogHandler;
@@ -75,7 +72,7 @@ class FileProxy
      */
     public function initFileCache()
     {
-        $factory = new \Proximate\Storage\FilecacheFactory($this->rootPath);
+        $factory = new FilecacheFactory($this->rootPath);
         $factory->init();
         $this->cachePool = $factory->getCachePool();
         $this->cacheAdapter = $factory->getCacheAdapter();

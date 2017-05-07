@@ -147,7 +147,7 @@ of objects, or using a fluent interface within a single object.
 Related packages
 ---
 
-Requester is designed to sit alongside other packages that are available (or are planned):
+Requester is designed to sit alongside these related packages:
 
 * [Proximate/Proxy](https://github.com/halfer/proximate-proxy) - an implementation of the
 proxy class, using the file cache, sitting on a Docker host volume.
@@ -157,8 +157,8 @@ connect Spatie\Crawler to a Proximate proxy instance.
 Requester library to offer a queryable interface to the proxy's cache contents. Items can be
 retrieved in paginated form, individually, or deleted. New URLs can be added to a crawl queue
 too.
-* Proximate/App - a simple web app that talks to the API to request scrapes, to browse and delete
-the proxy contents.
+* [Proximate/App](https://github.com/halfer/proximate-app) - a simple web app that talks to
+the API to request scrapes, to browse and delete the proxy contents.
 * [Proximate/Storage](https://github.com/halfer/proximate-storage) - classes to store
 proxied data in a cache service.
 * [Proximate/Core](https://github.com/halfer/proximate-core) - shared classes for various

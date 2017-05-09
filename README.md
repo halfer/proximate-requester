@@ -7,9 +7,11 @@ Downstream Proximate build statuses:
 
 | Subsystem  | Status |
 | ---------- | ------ |
-| [Proximate/Api](https://github.com/halfer/proximate-api)          | [![Build Status](https://travis-ci.org/halfer/proximate-api.svg?branch=master)](https://travis-ci.org/halfer/proximate-api)          |
+| [Proximate/Api](https://github.com/halfer/proximate-api)          | [![Build Status](https://travis-ci.org/halfer/proximate-api.svg?branch=master)](https://travis-ci.org/halfer/proximate-api)      |
 | [Proximate/Storage](https://github.com/halfer/proximate-storage)  | [![Build Status](https://travis-ci.org/halfer/proximate-storage.svg?branch=master)](https://travis-ci.org/halfer/proximate-storage)  |
 | [Proximate/Crawler](https://github.com/halfer/proximate-crawler)  | [![Build Status](https://travis-ci.org/halfer/proximate-crawler.svg?branch=master)](https://travis-ci.org/halfer/proximate-crawler)  |
+| [Proximate/Queue](https://github.com/halfer/proximate-queue)      | [![Build Status](https://travis-ci.org/halfer/proximate-queue.svg?branch=master)](https://travis-ci.org/halfer/proximate-queue)    |
+| [Proximate/Core](https://github.com/halfer/proximate-core)        | [![Build Status](https://travis-ci.org/halfer/proximate-core.svg?branch=master)](https://travis-ci.org/halfer/proximate-core)     |
 
 Introduction
 ---
@@ -159,6 +161,8 @@ retrieved in paginated form, individually, or deleted. New URLs can be added to 
 too.
 * [Proximate/App](https://github.com/halfer/proximate-app) - a simple web app that talks to
 the API to request scrapes, to browse and delete the proxy contents.
+* [Proximate/Queue](https://github.com/halfer/proximate-queue) - a file-based queue to send
+crawler requests to the Crawler via a Proxy instance.
 * [Proximate/Storage](https://github.com/halfer/proximate-storage) - classes to store
 proxied data in a cache service.
 * [Proximate/Core](https://github.com/halfer/proximate-core) - shared classes for various
